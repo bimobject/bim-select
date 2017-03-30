@@ -54,6 +54,9 @@ describe('bimSelect', function() {
                     setTimeout(resolve, 60);
                 });
             };
+            this.lis = function() {
+                return Array.prototype.slice.call(this.element.querySelectorAll('li'), 1, -1);
+            };
             this.press = function(which) {
                 this.event = $.Event('keydown', {
                     which: which
@@ -89,8 +92,8 @@ describe('bimSelect', function() {
         });
         it('renders the items in the list', function() {
             scope.items = [
-                { id: 1, name: 'Glenn' },
-                { id: 2, name: 'Miliam' }
+                { id: 1, text: 'Glenn' },
+                { id: 2, text: 'Miliam' }
             ];
             var element = createElement('<bim-select ng-model="value" items="items"></bim-select>');
             // vs-repeat pads with 2. so 4 instead of 2.
@@ -103,9 +106,9 @@ describe('bimSelect', function() {
         context('when items are updated', function() {
             beforeEach(function() {
                 scope.items = [
-                    { id: 1, name: 'Glenn' },
-                    { id: 2, name: 'Miliam' },
-                    { id: 3, name: 'Sigyn' }
+                    { id: 1, text: 'Glenn' },
+                    { id: 2, text: 'Miliam' },
+                    { id: 3, text: 'Sigyn' }
                 ];
                 this.element = createElement();
             });
@@ -139,7 +142,7 @@ describe('bimSelect', function() {
         });
         context('when filtered list is empty', function() {
             beforeEach(function() {
-                scope.items = [{ id: 1, name: 'Glenn' }];
+                scope.items = [{ id: 1, text: 'Glenn' }];
                 this.open();
                 this.filter('Miliam');
             });
@@ -172,8 +175,8 @@ describe('bimSelect', function() {
             context('with a selected value', function() {
                 beforeEach(function(done) {
                     scope.items = [
-                        { id: 1, name: 'Glenn' },
-                        { id: 2, name: 'Sigyn' }
+                        { id: 1, text: 'Glenn' },
+                        { id: 2, text: 'Sigyn' }
                     ];
                     scope.value = scope.items[0];
                     this.open().then(function() {
@@ -194,7 +197,7 @@ describe('bimSelect', function() {
                         expect(this.element.querySelector('.dropdown')).to.not.have.class('open');
                     });
                     it('shows the selected model text', function() {
-                        expect(this.element.querySelector('input')).to.have.value(scope.value.name);
+                        expect(this.element.querySelector('input')).to.have.value(scope.value.text);
                     });
                 });
                 context('when pressing escape', function() {
@@ -206,16 +209,16 @@ describe('bimSelect', function() {
                         expect(this.element.querySelector('.dropdown')).to.not.have.class('open');
                     });
                     it('shows the selected model text', function() {
-                        expect(this.element.querySelector('input')).to.have.value(scope.value.name);
+                        expect(this.element.querySelector('input')).to.have.value(scope.value.text);
                     });
                 });
             });
             context('when key pressed is', function() {
                 beforeEach(function() {
                     scope.items = [
-                        { id: 1, name: 'Glenn' },
-                        { id: 2, name: 'Miliam' },
-                        { id: 3, name: 'Sigyn' }
+                        { id: 1, text: 'Glenn' },
+                        { id: 2, text: 'Miliam' },
+                        { id: 3, text: 'Sigyn' }
                     ];
                 });
                 context('up arrow', function() {
@@ -243,7 +246,7 @@ describe('bimSelect', function() {
                         });
                         it('does not change the highlighted item', function() {
                             var active = this.pressUp();
-                            expect(active).to.have.property('name', 'Glenn');
+                            expect(active).to.have.property('text', 'Glenn');
                         });
                     });
                     context('when second item is highlighted', function() {
@@ -254,7 +257,7 @@ describe('bimSelect', function() {
                         });
                         it('highlights the first item', function() {
                             var active = this.pressUp();
-                            expect(active).to.have.property('name', 'Glenn');
+                            expect(active).to.have.property('text', 'Glenn');
                         });
                     });
                 });
@@ -266,7 +269,7 @@ describe('bimSelect', function() {
                         });
                         it('highlights the first item', function() {
                             var active = this.pressDown();
-                            expect(active).to.have.property('name', 'Glenn');
+                            expect(active).to.have.property('text', 'Glenn');
                         });
                     });
                     context('when first item is highlighted', function() {
@@ -276,7 +279,7 @@ describe('bimSelect', function() {
                         });
                         it('highlights the second', function() {
                             var active = this.pressDown();
-                            expect(active).to.have.property('name', 'Miliam');
+                            expect(active).to.have.property('text', 'Miliam');
                         });
                     });
                     context('when last item is highlighted', function() {
@@ -286,7 +289,7 @@ describe('bimSelect', function() {
                             this.pressDown();
                             this.pressDown();
                             var active = this.pressDown();
-                            expect(active).to.have.property('name', 'Sigyn');
+                            expect(active).to.have.property('text', 'Sigyn');
                         });
                         context('in a filtered list', function() {
                             beforeEach(function() {
@@ -298,7 +301,7 @@ describe('bimSelect', function() {
                             });
                             it('it does not change the highlight', function() {
                                 var active = this.pressDown();
-                                expect(active).to.have.property('name', 'Miliam');
+                                expect(active).to.have.property('text', 'Miliam');
                             });
                         });
                     });
@@ -312,7 +315,7 @@ describe('bimSelect', function() {
                         });
                         it('highlights the first item', function() {
                             var active = this.pressDown();
-                            expect(active).to.have.property('name', 'Glenn');
+                            expect(active).to.have.property('text', 'Glenn');
                         });
                     });
                 });
@@ -338,7 +341,7 @@ describe('bimSelect', function() {
                             this.pressEnter();
                             expect(scope.change).to.have.been.calledOnce;
                             expect(scope.change.firstCall).to.have.been
-                                .calledWith(sinon.match({ name: 'Glenn' }));
+                                .calledWith(sinon.match({ text: 'Glenn' }));
                         });
                     });
                 });
@@ -347,9 +350,9 @@ describe('bimSelect', function() {
         context('with initial model value', function() {
             beforeEach(function() {
                 scope.items = [
-                    { id: 1, name: 'Glenn' },
-                    { id: 2, name: 'Miliam' },
-                    { id: 3, name: 'Sigyn' }
+                    { id: 1, text: 'Glenn' },
+                    { id: 2, text: 'Miliam' },
+                    { id: 3, text: 'Sigyn' }
                 ];
                 scope.value = scope.items[1];
             });
@@ -361,7 +364,7 @@ describe('bimSelect', function() {
         context('without initial model value', function() {
             beforeEach(function() {
                 scope.items = [
-                    { id: 1, name: 'Glenn' }
+                    { id: 1, text: 'Glenn' }
                 ];
                 scope.value = null;
             });
@@ -374,9 +377,9 @@ describe('bimSelect', function() {
             beforeEach(function() {
                 this.click = function(markup) {
                     scope.items = [
-                        { id: 1, name: 'Glenn' },
-                        { id: 2, name: 'Miliam' },
-                        { id: 3, name: 'Sigyn' }
+                        { id: 1, text: 'Glenn' },
+                        { id: 2, text: 'Miliam' },
+                        { id: 3, text: 'Sigyn' }
                     ];
                     this.element = createElement(markup);
                     // vs-repeat pads with 1 <li> before
@@ -409,9 +412,9 @@ describe('bimSelect', function() {
         context('when opening, filtering, closing and opening again', function() {
             beforeEach(function() {
                 scope.items = [
-                    { id: 1, name: 'Glenn' },
-                    { id: 2, name: 'Miliam' },
-                    { id: 3, name: 'Sigyn' }
+                    { id: 1, text: 'Glenn' },
+                    { id: 2, text: 'Miliam' },
+                    { id: 3, text: 'Sigyn' }
                 ];
                 this.open();
                 // 2 and 3 included, 1 is out.
@@ -421,7 +424,7 @@ describe('bimSelect', function() {
                 this.open();
             });
             it('will show all items', function() {
-                var lis = [].slice.call(this.element.querySelectorAll('ul>li'), 1, -1);
+                var lis = [].slice.call(this.element.querySelectorAll('li'), 1, -1);
                 var texts = lis.map(function(li) {
                     return li.textContent.trim();
                 });
@@ -457,6 +460,81 @@ describe('bimSelect', function() {
             });
             it('opens', function() {
                 expect(this.element.querySelector('.dropdown')).to.have.class('open');
+            });
+        });
+        context('with an adapter', function() {
+            beforeEach(function() {
+                this.texts = function() {
+                    return this.lis().map(function(li) {
+                        return li.textContent.trim();
+                    });
+                };
+            });
+            it('allows for any data structure', function() {
+                scope.items = [
+                    { birthday: new Date(2017, 3, 1), name: 'April fool' },
+                    { birthday: new Date(2016, 11, 24), name: 'Mr Claus' },
+                    { birthday: new Date(1977, 3, 13), name: 'Glenn Jorde' }
+                ];
+                scope.adapter = function(item) {
+                    return {
+                        id: item.birthday.getFullYear(),
+                        text: item.name.substr(0, 1)
+                    };
+                };
+                this.open();
+
+                expect(this.texts()).to.deep.equal(['A', 'M', 'G']);
+            });
+            it('uses the adapter to set the input field value', function() {
+                scope.items = [{ id: 1, name: 'Glenn' }];
+                scope.adapter = function(item) {
+                    return {
+                        id: item.id,
+                        text: item.name
+                    };
+                };
+                this.open();
+                this.pressDown();
+                this.pressEnter();
+                expect(this.element.querySelector('input')).to.have.value('Glenn');
+            });
+            context('validates the adapted item', function() {
+                beforeEach(function() {
+                    scope.items = [{}];
+                });
+                it('for a text property', function() {
+                    scope.adapter = function() {
+                        return { id: 1 };
+                    };
+                    expect(function() {
+                        this.open();
+                    }.bind(this)).to.throw(/text/);
+                });
+                it('to allow string ids', function() {
+                    scope.adapter = function() {
+                        return { id: '1', text: 'Glenn' };
+                    };
+                    expect(function() {
+                        this.open();
+                    }.bind(this)).to.not.throw();
+                });
+                it('to allow numeric ids', function() {
+                    scope.adapter = function() {
+                        return { id: 1, text: 'Glenn' };
+                    };
+                    expect(function() {
+                        this.open();
+                    }.bind(this)).to.not.throw();
+                });
+                it('to disallow date ids', function() {
+                    scope.adapter = function() {
+                        return { id: new Date(), text: 'Glenn' };
+                    };
+                    expect(function() {
+                        this.open();
+                    }.bind(this)).to.throw(/id/);
+                });
             });
         });
     });
@@ -498,7 +576,11 @@ describe('bimSelect', function() {
             document.body.appendChild(container);
         }
 
-        markup = markup || '<bim-select ng-model="value" items="items" on-change="change(selected)"></bim-select>';
+        markup = markup || '<bim-select ng-model="value" \
+                                        items="items" \
+                                        on-change="change(selected)" \
+                                        adapter="adapter" \
+                            ></bim-select>';
         var elm = deps.$compile(markup)(scope);
         container.appendChild(elm[0]);
         scope.$digest();

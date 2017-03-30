@@ -15,21 +15,56 @@
      * @param {Expression} ngModel
      *   Should evaluate to a property that will contain the currently
      *   selected item in the `items` array.
-     * @param {Expression<Function>>} onChange
+     * @param {Expression<Function>>} [onChange]
      *   A function that will be notified when the user selects a new item
      *   in the list. Use `selected` in the expression to get hold of the
      *   selected item. The value of `selected` will be the value in the
      *   `items` array that was selected by the user.
+     * @param {Expression<Function>>} [adapter]
+     *   If each object in `items` does not have a `text` and `id` property
+     *   you can use an adapter to transform each item into an object bimSelect
+     *   can work with.
+     *
+     *   This function is invoked once for each item in the `items` list and must
+     *   return an object with a `text` (string) and an `id` (string, numeric)
+     *   property.
      *
      * @example
+     * Simple example
+     *
+     * ```html
      * <bim-select items="vm.items"
      *             ng-model="vm.selected"
      *             on-change="vm.update({ item: selected })">
+     * ```
+     *
+     * @example
+     * When using an adapter
+     *
+     * ```js
+     * vm.items = [
+     *   { age: 19, name: 'Nineteen' },
+     *   { age: 20, name: 'Twenty' }
+     * ];
+     * vm.adapter = function(item) {
+     *   // Convert to a text/id object
+     *   return {
+     *     id: item.age,
+     *     text: item.name
+     *   };
+     * }
+     * ```
+     * ```html
+     * <bim-select items="vm.items"
+     *             ng-model="vm.selected"
+     *             adapter="vm.adapter">
+     * ```
      */
     angular.module('app.widgets').component('bimSelect', {
         bindings: {
             items: '<',
-            onChange: '&'
+            onChange: '&',
+            adapter: '<'
         },
         require: {
             model: 'ngModel'
@@ -63,20 +98,17 @@
         $ctrl.$onInit = function() {
             renderSelection();
             $ctrl.model.$render = renderSelection;
+            $ctrl.adapter = $ctrl.adapter || angular.identity;
             setWidth();
         };
 
         $ctrl.$doCheck = function() {
-            var ids = '';
-            if ($ctrl.items) {
-                ids = $ctrl.items.map(function(item) {
-                    return item.id;
-                }).join('$');
-            }
+            var adaptedItems = adaptItems();
+            var ids = adaptedItems.map(function(item) { return item.id; }).join('$');
 
             if (ids !== currentJoinedInternalIds) {
                 currentJoinedInternalIds = ids;
-                updateInternalItems();
+                $ctrl.internalItems = adaptedItems;
                 updateMatches();
                 return;
             }
@@ -162,7 +194,7 @@
             $ctrl.activeIndex = -1;
             var query = $ctrl.inputValue || '';
             $ctrl.matches = $ctrl.internalItems.filter(function(item) {
-                var text = item.model.name.toLowerCase();
+                var text = item.text.toLowerCase();
                 return text.indexOf(query.toLowerCase()) >= 0;
             });
 
@@ -179,18 +211,19 @@
             }
         }
 
-        function updateInternalItems() {
-            $ctrl.internalItems = [];
-            if ($ctrl.items) {
-                $ctrl.internalItems = $ctrl.items.map(function(item, index) {
-                    return {
-                        model: item,
-                        // Allow customization on what property is used.
-                        text: item.name,
-                        id: 'bim-select-item-' + index
-                    };
-                });
-            }
+        function adaptItems() {
+            var externalItems = $ctrl.items || [];
+            return externalItems.map(function(item) {
+                var adapted = $ctrl.adapter(item);
+                if (typeof adapted.text !== 'string') {
+                    throw new Error('Adapter did not generate an object with a valid text string property');
+                }
+                if (typeof adapted.id !== 'string' && typeof adapted.id !== 'number') {
+                    throw new Error('Adapter did not generate an object with a valid id string or numeric property');
+                }
+                adapted.model = item;
+                return adapted;
+            });
         }
 
         function setWidth() {
@@ -199,11 +232,10 @@
 
         function setSelection(match) {
             $ctrl.model.$setViewValue(match.model);
-            $ctrl.inputValue = match.model.name;
         }
 
         function renderSelection() {
-            $ctrl.inputValue = $ctrl.model.$modelValue && $ctrl.model.$modelValue.name;
+            $ctrl.inputValue = $ctrl.model.$modelValue && $ctrl.adapter($ctrl.model.$modelValue).text;
         }
 
         function outsideClick(event) {
