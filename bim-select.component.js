@@ -118,7 +118,12 @@
         $ctrl.$onInit = function() {
             renderSelection();
             $ctrl.model.$render = renderSelection;
-            $ctrl.adapter = $ctrl.adapter || angular.identity;
+            $ctrl.adapter = $ctrl.adapter || function(item) {
+                return {
+                    text: item.text,
+                    id: item.id
+                };
+            };
             setWidth();
         };
 

@@ -109,6 +109,12 @@ describe('bimSelect', function() {
             var element = createElement('<bim-select ng-model="value"></bim-select>');
             expect(element.querySelector('ul')).to.have.attribute('vs-repeat');
         });
+        it('does not modify the item object', function() {
+            scope.items = [Object.freeze({ id: 1, text: 'Glenn' })];
+            expect(function() {
+                createElement();
+            }).to.not.throw();
+        });
         context('when items are updated', function() {
             beforeEach(function() {
                 scope.items = [
