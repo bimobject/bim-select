@@ -17,10 +17,11 @@
         role="listbox"
         ng-style="{ 'min-width': $ctrl.minWidth }">
         <li role="option"
-            ng-repeat="match in $ctrl.matches track by match.id"
             data-id="{{ match.id }}"
+            ng-repeat="match in $ctrl.matches track by match.id"
+            ng-click="$ctrl.select($event, match)"
             ng-class="{ active: $index === $ctrl.activeIndex }">
-            <a href="#" ng-click="$ctrl.select($event, match)">{{ match.text }}</a>
+            <ng-include src="$ctrl.itemTemplateUrl"></ng-include>
         </li>
     </ul>
 </div>

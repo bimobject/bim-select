@@ -28,6 +28,11 @@
      *   This function is invoked once for each item in the `items` list and must
      *   return an object with a `text` (string) and an `id` (string, numeric)
      *   property.
+     * @param {Expression<String>>} [itemTemplateUrl]
+     *   If you need to specify your own template to be rendered for each match
+     *   in the list, set the url to the template here. `match` is available on
+     *   the scope and is an object with `id`, `text` and `model` property, and
+     *   the `model` property has the item in the `items` array as a value.
      *
      * @example
      * Simple example
@@ -59,12 +64,25 @@
      *             ng-model="vm.selected"
      *             adapter="vm.adapter">
      * ```
+     *
+     * @example
+     * Custom template where the text should be "encrypted".
+     *
+     * ```html
+     * <script type="text/ng-template" id="item.html">
+     *   <span class="bim-select-item">{{ match.text | rot13 }}</span>
+     * </script>
+     *
+     * <bim-select items="vm.items"
+     *             ng-model="vm.selected"
+     *             item-template-url="'item.html'"></bim-select>
      */
     angular.module('app.widgets').component('bimSelect', {
         bindings: {
             items: '<',
             onChange: '&',
-            adapter: '<'
+            adapter: '<',
+            itemTemplateUrl: '<'
         },
         require: {
             model: 'ngModel'
@@ -79,6 +97,7 @@
         var $ctrl = this;
         var open;
         var currentJoinedInternalIds = null;
+        var defaultItemTemplateUrl = '/src/client/app/widgets/bim-select/bim-select-item.template.html';
 
         var Keys = {
             Escape: 27,
@@ -88,6 +107,7 @@
         };
 
         $ctrl.internalItems = [];
+        $ctrl.itemTemplateUrl = $ctrl.itemTemplateUrl || defaultItemTemplateUrl;
 
         $scope.$on('$destroy', function() {
             $document.off('mousedown touchstart pointerdown', outsideClick);

@@ -11,7 +11,13 @@ describe('bimSelect', function() {
     beforeEach(function() {
         module('app.templates');
         bard.appModule('app.widgets');
-        deps = bard.inject('$rootScope', '$compile', '$componentController', '$timeout');
+        deps = bard.inject(
+            '$rootScope',
+            '$compile',
+            '$componentController',
+            '$templateCache',
+            '$timeout'
+        );
         scope = deps.$rootScope.$new();
     });
     afterEach(function() {
@@ -131,7 +137,7 @@ describe('bimSelect', function() {
                 expect(li).to.contain.text('No options');
             });
             it('does not allow user to select the message item', function() {
-                this.element.querySelector('li:nth-child(2) a').click();
+                this.element.querySelector('li:nth-child(2) .bim-select-item').click();
                 scope.$digest();
                 expect(scope.change).to.not.have.been.called;
             });
@@ -383,7 +389,7 @@ describe('bimSelect', function() {
                     ];
                     this.element = createElement(markup);
                     // vs-repeat pads with 1 <li> before
-                    this.element.querySelector('li:nth-child(2) a').click();
+                    this.element.querySelector('li:nth-child(2) .bim-select-item').click();
                     scope.$digest();
                 };
             });
@@ -537,6 +543,20 @@ describe('bimSelect', function() {
                 });
             });
         });
+        context('with a custom item template', function() {
+            it('uses it', function() {
+                scope.items = [
+                    { id: 4, text: 'Glenn' },
+                    { id: 5, text: 'Miliam' }
+                ];
+                scope.itemTemplateUrl = 'item.html';
+                deps.$templateCache.put('item.html', '<custom>{{ match.text }}</custom>');
+
+                var element = createElement();
+
+                expect(element.querySelectorAll('li custom')).to.have.length(2);
+            });
+        });
     });
 
     describe('controller', function() {
@@ -576,11 +596,14 @@ describe('bimSelect', function() {
             document.body.appendChild(container);
         }
 
+        /* eslint-disable no-multi-str */
         markup = markup || '<bim-select ng-model="value" \
                                         items="items" \
                                         on-change="change(selected)" \
+                                        item-template-url="itemTemplateUrl" \
                                         adapter="adapter" \
                             ></bim-select>';
+        /* eslint-enable no-multi-str */
         var elm = deps.$compile(markup)(scope);
         container.appendChild(elm[0]);
         scope.$digest();

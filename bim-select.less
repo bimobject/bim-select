@@ -1,19 +1,23 @@
 bim-select {
     display: block;
 
-    /* ul, li { */
-    /*     display: block; */
-    /*     margin: 0; */
-    /*     padding: 0; */
-    /*     list-style: none; */
-    /* } */
-
     .bim-select-dropdown {
         max-height: 300px;
         overflow: auto;
 
         .active {
-            background: blue;
+            // color taken from @dropdown-link-active-*
+            // See: https://git.io/vS8pF
+            background: #337ab7;
+            color: white;
         }
+    }
+    .bim-select-item {
+        // Padding etc is tken from:
+        // https://git.io/vS8hv
+        display: block;
+        padding: 3px 20px;
+        line-height: 1.42857143;
+        cursor: pointer;
     }
 }
