@@ -8,7 +8,7 @@
                ng-focus="$ctrl.activateHandler($event)"
                ng-change="$ctrl.inputValueChangeHandler()"
                ng-model="$ctrl.inputValue">
-        <span class="input-group-addon">
+        <span class="input-group-addon" ng-click="$ctrl.toggleHandler()">
             <span class="caret"></span>
         </span>
     </div>

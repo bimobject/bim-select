@@ -144,7 +144,16 @@
         $ctrl.activateHandler = function(event) {
             event.stopPropagation();
             $ctrl.inputValue = '';
+
             open();
+        };
+
+        $ctrl.toggleHandler = function() {
+            if ($element.find('.dropdown').hasClass('open')) {
+                $ctrl.close();
+            } else {
+                $element.find('input').focus();
+            }
         };
 
         $ctrl.close = function() {

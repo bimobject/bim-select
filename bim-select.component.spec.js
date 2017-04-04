@@ -115,6 +115,43 @@ describe('bimSelect', function() {
                 createElement();
             }).to.not.throw();
         });
+        context('when clicking the arrow', function() {
+            beforeEach(function() {
+                this.element = createElement();
+                this.click = function() {
+                    angular.element(this.element).find('.input-group-addon').click();
+                    scope.$digest();
+                    return new Promise(function(resolve, reject) {
+                        setTimeout(resolve, 60);
+                    });
+                };
+            });
+            it('opens the popup', function() {
+                return this.click().then(function() {
+                    expect(this.element.querySelector('.dropdown')).to.have.class('open');
+                }.bind(this));
+            });
+            it('toggles', function() {
+                return this.click().then(function() {
+                    return this.click().then(function() {
+                        expect(this.element.querySelector('.dropdown')).to.not.have.class('open');
+                    }.bind(this));
+                }.bind(this));
+            });
+            it('set focus to the input', function() {
+                var input = this.element.querySelector('input');
+                return this.click().then(function() {
+                    expect(document.activeElement).to.equal(input);
+                });
+            });
+            it('clears the input text', function() {
+                scope.items = [{ id: 'id', text: 'Glenn' }];
+                scope.value = scope.items[0];
+                return this.click().then(function() {
+                    expect(this.element.querySelector('input')).to.be.empty;
+                }.bind(this));
+            });
+        });
         context('when items are updated', function() {
             beforeEach(function() {
                 scope.items = [
