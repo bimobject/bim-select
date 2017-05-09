@@ -608,16 +608,16 @@ describe('bimSelect', function() {
             this.controller = angular.element(this.element).controller('bimSelect');
         });
         describe('init', function() {
-            it('sets the min-width of the popup', function() {
+            it('sets the width of the popup', function() {
                 var group = this.element.querySelector('.input-group');
                 group.style.width = '400px';
                 var ul = this.element.querySelector('ul');
-                expect(ul).to.not.have.style('min-width', '400px');
+                expect(ul).to.not.have.style('width', '400px');
 
                 this.controller.$onInit();
                 scope.$digest();
 
-                expect(ul).to.have.style('min-width', '400px');
+                expect(ul).to.have.style('width', '400px');
             });
         });
         describe('.select()', function() {

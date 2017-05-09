@@ -15,7 +15,7 @@
     <ul class="bim-select-dropdown dropdown-menu"
         vs-repeat
         role="listbox"
-        ng-style="{ 'min-width': $ctrl.minWidth }">
+        ng-style="{ 'width': $ctrl.width }">
         <li role="option"
             data-id="{{ match.id }}"
             ng-repeat="match in $ctrl.matches track by match.id"

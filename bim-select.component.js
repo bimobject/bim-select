@@ -261,7 +261,7 @@
         }
 
         function setWidth() {
-            $ctrl.minWidth = $element.find('.input-group').outerWidth();
+            $ctrl.width = $element.find('.input-group').outerWidth();
         }
 
         function setSelection(match) {
