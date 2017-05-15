@@ -396,6 +396,31 @@ describe('bimSelect', function() {
                 });
             });
         });
+        context('when scrolling down', function() {
+            beforeEach(function(done) {
+                scope.items = _.range(50).map(function(item, index) {
+                    return {
+                        id: index,
+                        text: 'Item ' + (index + 1)
+                    };
+                });
+                this.open().then(function() {
+                    done();
+                    var ul = this.element.querySelector('ul');
+                    ul.style.overflow = 'auto';
+                    ul.style.height = '100px';
+                    ul.scrollTop = 200;
+                }.bind(this));
+            });
+            context('when narrowing search', function() {
+                beforeEach(function() {
+                    this.filter('I'); // filter that still has a scrollbar
+                });
+                it('resets the scrolling', function() {
+                    expect(this.element.querySelector('ul')).to.have.property('scrollTop', 0);
+                });
+            });
+        });
         context('with initial model value', function() {
             beforeEach(function() {
                 scope.items = [

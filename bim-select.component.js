@@ -205,6 +205,7 @@
 
         $ctrl.inputValueChangeHandler = function() {
             updateMatches();
+            $element[0].querySelector('ul').scrollTop = 0;
             if (!$ctrl.active) {
                 open();
             }
