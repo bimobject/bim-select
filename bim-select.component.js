@@ -232,6 +232,11 @@
                 var text = item.text.toLowerCase();
                 return text.indexOf(query.toLowerCase()) >= 0;
             });
+            // Workaround to expose real index for each item since
+            // vs-repeat modifies it.
+            $ctrl.matches.forEach(function(match, index) {
+                match.index = index;
+            });
 
             if ($ctrl.inputValue && $ctrl.matches.length === 0) {
                 $ctrl.matches.push({
