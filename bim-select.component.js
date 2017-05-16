@@ -98,6 +98,7 @@
         var open;
         var currentJoinedInternalIds = null;
         var defaultItemTemplateUrl = '/src/client/app/widgets/bim-select/bim-select-item.template.html';
+        var ul = $element[0].querySelector('ul');
 
         var Keys = {
             Escape: 27,
@@ -207,7 +208,7 @@
 
         $ctrl.inputValueChangeHandler = function() {
             updateMatches();
-            $element[0].querySelector('ul').scrollTop = 0;
+            ul.scrollTop = 0;
             if (!$ctrl.active) {
                 open();
             }
@@ -217,7 +218,6 @@
 
         function ensureVisibleItem() {
             $timeout(function() {
-                var ul = $element[0].querySelector('ul');
                 var li = ul.querySelector('li.active');
 
                 if (li) {
@@ -311,6 +311,7 @@
             if (!elm) {
                 // We hit document, and not any element within the directive
                 $scope.$apply(function() {
+                    ul.scrollTop = 0;
                     $ctrl.close();
                 });
             }

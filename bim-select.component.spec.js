@@ -432,6 +432,9 @@ describe('bimSelect', function() {
                         var controller = angular.element(this.element).controller('bimSelect');
                         expect(controller).to.have.property('activeIndex', -1);
                     });
+                    it('resets the scrolling', function() {
+                        expect(this.element.querySelector('ul')).to.have.property('scrollTop', 0);
+                    });
                 });
             });
             context('when arrowing to highlight an item outside of the scroll area', function() {
