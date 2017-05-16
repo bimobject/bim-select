@@ -184,6 +184,7 @@
                 );
                 if ($ctrl.matches[newIndex].id !== 'bim-select-message') {
                     $ctrl.activeIndex = newIndex;
+                    ensureVisibleItem();
                 }
             }
 
@@ -191,6 +192,7 @@
                 event.preventDefault();
                 if ($ctrl.activeIndex > -1) {
                     $ctrl.activeIndex = Math.max($ctrl.activeIndex - 1, 0);
+                    ensureVisibleItem();
                 }
             }
 
@@ -212,6 +214,28 @@
         };
 
         // INTERNAL HELPERS
+
+        function ensureVisibleItem() {
+            $timeout(function() {
+                var ul = $element[0].querySelector('ul');
+                var li = ul.querySelector('li.active');
+
+                if (li) {
+                    var itemHeight = li.clientHeight;
+                    var listHeight = ul.clientHeight;
+                    var offsetTop = li.offsetTop;
+
+                    // below viewport
+                    if (offsetTop + itemHeight > ul.scrollTop + listHeight) {
+                        ul.scrollTop = offsetTop - listHeight + 2 * itemHeight;
+                    }
+                    // above viewport
+                    if (offsetTop - 5 < ul.scrollTop) {
+                        ul.scrollTop = offsetTop - itemHeight;
+                    }
+                }
+            });
+        }
 
         open = _.debounce(function open() {
             $scope.$apply(function() {

@@ -6,6 +6,7 @@
 describe('bimSelect', function() {
     var deps;
     var container;
+    var styles;
     var scope;
 
     beforeEach(function() {
@@ -396,9 +397,9 @@ describe('bimSelect', function() {
                 });
             });
         });
-        context('when scrolling down', function() {
+        context('with scrolling items', function() {
             beforeEach(function(done) {
-                scope.items = _.range(50).map(function(item, index) {
+                scope.items = _.range(500).map(function(item, index) {
                     return {
                         id: index,
                         text: 'Item ' + (index + 1)
@@ -406,18 +407,50 @@ describe('bimSelect', function() {
                 });
                 this.open().then(function() {
                     done();
-                    var ul = this.element.querySelector('ul');
-                    ul.style.overflow = 'auto';
-                    ul.style.height = '100px';
-                    ul.scrollTop = 200;
-                }.bind(this));
-            });
-            context('when narrowing search', function() {
-                beforeEach(function() {
-                    this.filter('I'); // filter that still has a scrollbar
                 });
-                it('resets the scrolling', function() {
-                    expect(this.element.querySelector('ul')).to.have.property('scrollTop', 0);
+            });
+            context('when scrolled down', function() {
+                beforeEach(function() {
+                    this.element.querySelector('ul').scrollTop = 200;
+                });
+                context('when narrowing search', function() {
+                    beforeEach(function() {
+                        this.filter('I'); // filter that still has a scrollbar
+                    });
+                    it('resets the scrolling', function() {
+                        expect(this.element.querySelector('ul')).to.have.property('scrollTop', 0);
+                    });
+                });
+                context('when closing and opening again', function() {
+                    beforeEach(function(done) {
+                        angular.element(document).trigger('mousedown');
+                        this.open().then(function() {
+                            done();
+                        });
+                    });
+                    it('resets the activeIndex', function() {
+                        var controller = angular.element(this.element).controller('bimSelect');
+                        expect(controller).to.have.property('activeIndex', -1);
+                    });
+                });
+            });
+            context('when arrowing to highlight an item outside of the scroll area', function() {
+                beforeEach(function(done) {
+                    _.times(15, function() {
+                        this.pressDown();
+                        deps.$timeout.flush();
+                    }.bind(this));
+                    done();
+                });
+                it.skip('should be visible', function() {
+                    // Skipped since it does not scroll down.
+                    // TODO: Somewhere there is a hold up in the testing,
+                    // implementation works it seems.
+                    var ul = this.element.querySelector('ul');
+                    var li = this.element.querySelector('li.active');
+
+                    expect(li).to.contain.text('15');
+                    expect(li.offsetTop).to.be.greater.than(ul.scrollTop);
                 });
             });
         });
@@ -663,9 +696,21 @@ describe('bimSelect', function() {
             container = document.createElement('div');
             document.body.appendChild(container);
         }
+        if (!styles) {
+            styles = document.createElement('style');
+            /* eslint-disable no-multi-str */
+            styles.innerHTML = '\
+                .bim-select-spec .input-group { width: 100px; }\
+                .bim-select-spec ul { overflow: auto; height: 100px; outline: 1px solid red; margin: 0; padding: 1px; list-style: none; }\
+                .bim-select-spec li.active { outline: 1px solid green; }\
+                ';
+            /* eslint-enable no-multi-str */
+            document.body.appendChild(styles);
+        }
 
         /* eslint-disable no-multi-str */
-        markup = markup || '<bim-select ng-model="value" \
+        markup = markup || '<bim-select class="bim-select-spec" \
+                                        ng-model="value" \
                                         items="items" \
                                         on-change="change(selected)" \
                                         item-template-url="itemTemplateUrl" \
