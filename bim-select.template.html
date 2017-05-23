@@ -7,19 +7,20 @@
                ng-blur="$ctrl.deactivateHandler($event)"
                ng-focus="$ctrl.activateHandler($event)"
                ng-change="$ctrl.inputValueChangeHandler()"
+               ng-disabled="$ctrl.isDisabled()"
                ng-model="$ctrl.inputValue">
         <span class="input-group-btn">
-            <button
-                class="btn btn-default bim-select--clear"
-                type="button"
-                ng-click="$ctrl.clear()"
-                ng-if="$ctrl.isClearable()">
+            <button class="btn btn-default bim-select--clear"
+                    type="button"
+                    ng-click="$ctrl.clear()"
+                    ng-disabled="$ctrl.isDisabled()"
+                    ng-if="$ctrl.isClearable() && !$ctrl.isDisabled()">
                 <span class="fa fa-remove"></span>
             </button>
-            <button
-                class="btn btn-default bim-select--open"
-                type="button"
-                ng-click="$ctrl.toggleHandler()">
+            <button class="btn btn-default bim-select--toggle"
+                    type="button"
+                    ng-disabled="$ctrl.isDisabled()"
+                    ng-click="$ctrl.toggleHandler()">
                 <span class="fa fa-caret-down"></span>
             </button>
         </span>

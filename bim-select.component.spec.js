@@ -120,7 +120,7 @@ describe('bimSelect', function() {
             beforeEach(function() {
                 this.element = createElement();
                 this.click = function() {
-                    angular.element(this.element).find('.bim-select--open').click();
+                    angular.element(this.element).find('.bim-select--toggle').click();
                     scope.$digest();
                     return new Promise(function(resolve, reject) {
                         setTimeout(resolve, 60);
@@ -734,6 +734,51 @@ describe('bimSelect', function() {
             });
             it('removes the clear button', function() {
                 expect(this.element.querySelector('.bim-select--clear')).to.not.exist;
+            });
+        });
+        context('when disabled', function() {
+            beforeEach(function() {
+                scope.items = [{ id: 1, text: '1' }];
+                scope.value = scope.items[0];
+                /* eslint-disable no-multi-str */
+                this.element = createElement('\
+                    <bim-select class="bim-select-spec" \
+                        ng-disabled="disabled" \
+                        ng-model="value" \
+                        items="items" \
+                    ></bim-select>');
+                /* eslint-enable no-multi-str */
+            });
+            context('is true', function() {
+                beforeEach(function() {
+                    scope.disabled = true;
+                    scope.$digest();
+                });
+                it('the input is disabled', function() {
+                    expect(this.element.querySelector('input')).to.have.property('disabled', true);
+                });
+                it('the clear button is removed', function() {
+                    scope.$digest();
+                    expect(this.element.querySelector('.bim-select--clear')).to.not.exist;
+                });
+                it('the toggler is disabled', function() {
+                    expect(this.element.querySelector('.bim-select--toggle')).to.have.property('disabled', true);
+                });
+            });
+            context('is false', function() {
+                beforeEach(function() {
+                    scope.disabled = false;
+                    scope.$digest();
+                });
+                it('the input is enabled', function() {
+                    expect(this.element.querySelector('input')).to.have.property('disabled', false);
+                });
+                it('the clear button is enabled', function() {
+                    expect(this.element.querySelector('.bim-select--clear')).to.have.property('disabled', false);
+                });
+                it('the toggler is enabled', function() {
+                    expect(this.element.querySelector('.bim-select--toggle')).to.have.property('disabled', false);
+                });
             });
         });
     });

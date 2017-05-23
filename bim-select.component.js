@@ -6,11 +6,11 @@
      * items. It is using a virtual scroll to handle the amount of items.
      * It works just as fine with a smaller amount of items.
      *
-     * By default the user may clear the selected value, and then the model
-     * is `null`. If you need to control this, use [`ngRequired`][ngRequired]
-     * attribute directive from angular.
+     * Supports [`ngRequired`][ngRequired] and [`ngDisabled`][ngDisabled].
+     * Both defaults to false.
      *
      *   [ngRequired]: https://docs.angularjs.org/api/ng/directive/ngRequired
+     *   [ngDisabled]: https://docs.angularjs.org/api/ng/directive/ngDisabled
      *
      * @param {Expression<Array<?>>} items
      *   An angular expression that evaluates to an array of items in it that
@@ -239,7 +239,12 @@
         };
 
         $ctrl.isRequired = function() {
-            return $attrs.required;
+            return !!$attrs.required;
+        };
+
+        $ctrl.isDisabled = function() {
+            console.log($attrs.disabled);
+            return !!$attrs.disabled;
         };
 
         $ctrl.isClearable = function() {
