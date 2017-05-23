@@ -6,6 +6,12 @@
      * items. It is using a virtual scroll to handle the amount of items.
      * It works just as fine with a smaller amount of items.
      *
+     * By default the user may clear the selected value, and then the model
+     * is `null`. If you need to control this, use [`ngRequired`][ngRequired]
+     * attribute directive from angular.
+     *
+     *   [ngRequired]: https://docs.angularjs.org/api/ng/directive/ngRequired
+     *
      * @param {Expression<Array<?>>} items
      *   An angular expression that evaluates to an array of items in it that
      *   should be available to select from in the list by the user.
@@ -91,9 +97,21 @@
         controller: BimSelectController
     });
 
-    BimSelectController.$inject = ['$document', '$element', '$timeout', '$scope'];
+    BimSelectController.$inject = [
+        '$document',
+        '$element',
+        '$timeout',
+        '$scope',
+        '$attrs'
+    ];
 
-    function BimSelectController($document, $element, $timeout, $scope) {
+    function BimSelectController(
+        $document,
+        $element,
+        $timeout,
+        $scope,
+        $attrs
+    ) {
         var $ctrl = this;
         var open;
         var currentJoinedInternalIds = null;
@@ -172,6 +190,12 @@
             }
         };
 
+        $ctrl.clear = function() {
+            $ctrl.model.$setViewValue(null);
+            $ctrl.onChange({ selected: null });
+            $ctrl.close();
+        };
+
         $ctrl.keydownHandler = function(event) {
             if (event.which === Keys.Escape) {
                 $ctrl.close();
@@ -212,6 +236,16 @@
             if (!$ctrl.active) {
                 open();
             }
+        };
+
+        $ctrl.isRequired = function() {
+            return $attrs.required;
+        };
+
+        $ctrl.isClearable = function() {
+            return $ctrl.model.$modelValue !== undefined &&
+                $ctrl.model.$modelValue !== null &&
+                !$ctrl.isRequired();
         };
 
         // INTERNAL HELPERS
@@ -299,7 +333,11 @@
         }
 
         function renderSelection() {
-            $ctrl.inputValue = $ctrl.model.$modelValue && $ctrl.adapter($ctrl.model.$modelValue).text;
+            if ($ctrl.model.$modelValue === undefined || $ctrl.model.$modelValue === null) {
+                $ctrl.inputValue = 'No selection';
+            } else {
+                $ctrl.inputValue = $ctrl.model.$modelValue && $ctrl.adapter($ctrl.model.$modelValue).text;
+            }
         }
 
         function outsideClick(event) {

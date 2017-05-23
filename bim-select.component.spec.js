@@ -120,7 +120,7 @@ describe('bimSelect', function() {
             beforeEach(function() {
                 this.element = createElement();
                 this.click = function() {
-                    angular.element(this.element).find('.input-group-addon').click();
+                    angular.element(this.element).find('.bim-select--open').click();
                     scope.$digest();
                     return new Promise(function(resolve, reject) {
                         setTimeout(resolve, 60);
@@ -471,16 +471,22 @@ describe('bimSelect', function() {
                 expect(element.querySelector('input')).to.have.value('Miliam');
             });
         });
-        context('without initial model value', function() {
+        context('without initial model value of', function() {
             beforeEach(function() {
                 scope.items = [
                     { id: 1, text: 'Glenn' }
                 ];
                 scope.value = null;
             });
-            it('render an empty string', function() {
+            it('null render an empty control', function() {
+                scope.value = null;
                 var element = createElement();
-                expect(element.querySelector('input')).to.have.value('');
+                expect(element.querySelector('input')).to.have.value('No selection');
+            });
+            it('undefined render an empty control', function() {
+                scope.value = undefined;
+                var element = createElement();
+                expect(element.querySelector('input')).to.have.value('No selection');
             });
         });
         context('when clicking first item', function() {
@@ -659,6 +665,75 @@ describe('bimSelect', function() {
                 var element = createElement();
 
                 expect(element.querySelectorAll('li custom')).to.have.length(2);
+            });
+        });
+        context('when required is not set', function() {
+            beforeEach(function() {
+                scope.items = [{ id: 1, text: '1' }];
+                scope.value = scope.items[0];
+                this.element = createElement();
+            });
+            it('has a clear button', function() {
+                expect(this.element.querySelector('.bim-select--clear')).to.exist;
+            });
+        });
+        context('when required', function() {
+            beforeEach(function() {
+                scope.items = [{ id: 1, text: '1' }];
+                scope.value = scope.items[0];
+                /* eslint-disable no-multi-str */
+                this.element = createElement('\
+                    <bim-select class="bim-select-spec" \
+                        ng-model="value" \
+                        items="items" \
+                        ng-required="required" \
+                    ></bim-select>');
+                /* eslint-enable no-multi-str */
+            });
+            context('is true', function() {
+                beforeEach(function() {
+                    scope.required = true;
+                    scope.$digest();
+                });
+                it('has no clear button', function() {
+                    expect(this.element.querySelector('.bim-select--clear')).to.not.exist;
+                });
+            });
+            context('is false', function() {
+                beforeEach(function() {
+                    scope.required = false;
+                    scope.$digest();
+                });
+                it('has a clear button', function() {
+                    expect(this.element.querySelector('.bim-select--clear')).to.exist;
+                });
+            });
+        });
+        context('when clicking clear', function() {
+            beforeEach(function(done) {
+                scope.items = [{ text: 'glenn', id: 1 }];
+                scope.change = sinon.stub();
+                scope.value = scope.items[0];
+                this.open().then(function() {
+                    this.element.querySelector('.bim-select--clear').click();
+                    scope.$digest();
+                    done();
+                }.bind(this));
+            });
+            it('clears the model', function() {
+                expect(scope.value).to.be.null;
+            });
+            it('triggers an on-change handler', function() {
+                expect(scope.change).to.have.been.calledWith(null);
+            });
+            it('closes the list', function() {
+                expect(this.element.querySelector('.dropdown')).to.not.have.class('open');
+            });
+            it('renders the appropriate text', function() {
+                expect(this.element.querySelector('input')).to.have.value('No selection');
+            });
+            it('removes the clear button', function() {
+                expect(this.element.querySelector('.bim-select--clear')).to.not.exist;
             });
         });
     });

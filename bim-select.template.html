@@ -8,8 +8,20 @@
                ng-focus="$ctrl.activateHandler($event)"
                ng-change="$ctrl.inputValueChangeHandler()"
                ng-model="$ctrl.inputValue">
-        <span class="input-group-addon" ng-click="$ctrl.toggleHandler()">
-            <span class="caret"></span>
+        <span class="input-group-btn">
+            <button
+                class="btn btn-default bim-select--clear"
+                type="button"
+                ng-click="$ctrl.clear()"
+                ng-if="$ctrl.isClearable()">
+                <span class="fa fa-remove"></span>
+            </button>
+            <button
+                class="btn btn-default bim-select--open"
+                type="button"
+                ng-click="$ctrl.toggleHandler()">
+                <span class="fa fa-caret-down"></span>
+            </button>
         </span>
     </div>
     <ul class="bim-select-dropdown dropdown-menu"
