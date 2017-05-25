@@ -243,7 +243,6 @@
         };
 
         $ctrl.isDisabled = function() {
-            console.log($attrs.disabled);
             return !!$attrs.disabled;
         };
 
