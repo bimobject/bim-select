@@ -1,25 +1,27 @@
 /* eslint-env mocha */
-/* global sinon, bard, expect, $ */
+/* global sinon, expect */
 
 // TODO: switch to use sinon.useFakeTimers instead of all the proimses.
 
 describe('bimSelect', function() {
-    var deps;
+    var $rootScope;
+    var $compile;
+    var $templateCache;
+    var $timeout;
     var container;
     var styles;
     var scope;
 
     beforeEach(function() {
-        module('app.templates');
-        bard.appModule('app.widgets');
-        deps = bard.inject(
-            '$rootScope',
-            '$compile',
-            '$componentController',
-            '$templateCache',
-            '$timeout'
-        );
-        scope = deps.$rootScope.$new();
+        angular.mock.module('bim.select.templates');
+        angular.mock.module('bim.select');
+        angular.mock.inject(function($injector) {
+            $rootScope = $injector.get('$rootScope');
+            $compile = $injector.get('$compile');
+            $templateCache = $injector.get('$templateCache');
+            $timeout = $injector.get('$timeout');
+        });
+        scope = $rootScope.$new();
     });
     afterEach(function() {
         container && document.body.removeChild(container);
@@ -28,8 +30,6 @@ describe('bimSelect', function() {
 
     describe('component', function() {
         beforeEach(function() {
-            sinon.spy($.fn, 'dropdown');
-
             this.open = function(preventCreate) {
                 if (!preventCreate) {
                     this.element = createElement();
@@ -65,7 +65,7 @@ describe('bimSelect', function() {
                 return Array.prototype.slice.call(this.element.querySelectorAll('li'), 1, -1);
             };
             this.press = function(which) {
-                this.event = $.Event('keydown', {
+                this.event = angular.element.Event('keydown', {
                     which: which
                 });
                 sinon.spy(this.event, 'preventDefault');
@@ -93,9 +93,6 @@ describe('bimSelect', function() {
             this.pressDown = function() { return this.press(40); };
             this.pressEnter = function() { return this.press(13); };
             this.pressEscape = function() { return this.press(27); };
-        });
-        afterEach(function() {
-            $.fn.dropdown.restore();
         });
         it('renders the items in the list', function() {
             scope.items = [
@@ -217,7 +214,7 @@ describe('bimSelect', function() {
                 this.open().then(function() {
                     var $element = angular.element(this.element);
                     $element.find('[vs-repeat]').scope().$on('vsRepeatResize', spy);
-                    deps.$timeout.flush();
+                    $timeout.flush();
                     expect(spy).to.have.been.calledOnce;
                     done();
                 }.bind(this));
@@ -399,7 +396,7 @@ describe('bimSelect', function() {
         });
         context('with scrolling items', function() {
             beforeEach(function(done) {
-                scope.items = _.range(500).map(function(item, index) {
+                scope.items = new Array(500).map(function(_item, index) {
                     return {
                         id: index,
                         text: 'Item ' + (index + 1)
@@ -439,10 +436,10 @@ describe('bimSelect', function() {
             });
             context('when arrowing to highlight an item outside of the scroll area', function() {
                 beforeEach(function(done) {
-                    _.times(15, function() {
+                    for (var i = 0; i < 15; i++) {
                         this.pressDown();
-                        deps.$timeout.flush();
-                    }.bind(this));
+                        $timeout.flush();
+                    }
                     done();
                 });
                 it.skip('should be visible', function() {
@@ -572,7 +569,7 @@ describe('bimSelect', function() {
                 return this.filter('glen');
             });
             beforeEach(function() {
-                deps.$timeout.flush();
+                $timeout.flush();
             });
             it('opens', function() {
                 expect(this.element.querySelector('.dropdown')).to.have.class('open');
@@ -598,9 +595,9 @@ describe('bimSelect', function() {
                         text: item.name.substr(0, 1)
                     };
                 };
-                this.open();
-
-                expect(this.texts()).to.deep.equal(['A', 'M', 'G']);
+                return this.open().then(function() {
+                    expect(this.texts()).to.deep.equal(['A', 'M', 'G']);
+                }.bind(this));
             });
             it('uses the adapter to set the input field value', function() {
                 scope.items = [{ id: 1, name: 'Glenn' }];
@@ -660,7 +657,7 @@ describe('bimSelect', function() {
                     { id: 5, text: 'Miliam' }
                 ];
                 scope.itemTemplateUrl = 'item.html';
-                deps.$templateCache.put('item.html', '<custom>{{ match.text }}</custom>');
+                $templateCache.put('item.html', '<custom>{{ match.text }}</custom>');
 
                 var element = createElement();
 
@@ -840,7 +837,7 @@ describe('bimSelect', function() {
                                         adapter="adapter" \
                             ></bim-select>';
         /* eslint-enable no-multi-str */
-        var elm = deps.$compile(markup)(scope);
+        var elm = $compile(markup)(scope);
         container.appendChild(elm[0]);
         scope.$digest();
 

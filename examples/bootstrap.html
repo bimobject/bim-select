@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <title>Example of bim-select using bootstrap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="../bower_components/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="../src/bim-select.css">
+</head>
+<body ng-controller="ExampleController as vm">
+    <div class="container">
+        <h1>Examples</h1>
+        <h2>Using bootstrap</h2>
+
+        <bim-select items="vm.countries"
+                    adapter="vm.adapter"
+                    ng-model="vm.value"
+                    ng-disabled="vm.disabled"></bim-select>
+
+        <input type="checkbox" id="dis" ng-model="vm.disabled">
+        <label for="dis">Simulate disabled state</label>
+    </div>
+
+    <script src="../bower_components/jquery/dist/jquery.js"></script>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-vs-repeat/src/angular-vs-repeat.js"></script>
+    <script src="../src/bim-select.component.js"></script>
+    <script>
+    angular
+        .module('app', ['bim.select'])
+        .controller('ExampleController', function() {
+            this.countries = [
+                { name: 'Denmark', code: 'dk' },
+                { name: 'Sweden', code: 'sv' },
+                { name: 'Finland', code: 'fi' },
+                { name: 'Norway', code: 'no' },
+            ]
+            this.value = this.countries[1];
+            this.adapter = function(item) {
+                return {
+                    text: item.name,
+                    id: item.code
+                }
+            }
+        })
+    </script>
+</body>
+</html>

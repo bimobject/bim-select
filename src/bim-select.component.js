@@ -83,7 +83,7 @@
      *             ng-model="vm.selected"
      *             item-template-url="'item.html'"></bim-select>
      */
-    angular.module('app.widgets').component('bimSelect', {
+    angular.module('bim.select', ['vs-repeat']).component('bimSelect', {
         bindings: {
             items: '<',
             onChange: '&',
@@ -93,7 +93,7 @@
         require: {
             model: 'ngModel'
         },
-        templateUrl: '/src/client/app/widgets/bim-select/bim-select.template.html',
+        templateUrl: '/src/bim-select.template.html',
         controller: BimSelectController
     });
 
@@ -115,7 +115,7 @@
         var $ctrl = this;
         var open;
         var currentJoinedInternalIds = null;
-        var defaultItemTemplateUrl = '/src/client/app/widgets/bim-select/bim-select-item.template.html';
+        var defaultItemTemplateUrl = '/src/bim-select-item.template.html';
         var ul = $element[0].querySelector('ul');
 
         var Keys = {
@@ -126,7 +126,6 @@
         };
 
         $ctrl.internalItems = [];
-        $ctrl.itemTemplateUrl = $ctrl.itemTemplateUrl || defaultItemTemplateUrl;
 
         $scope.$on('$destroy', function() {
             $document.off('mousedown touchstart pointerdown', outsideClick);
@@ -135,6 +134,7 @@
         // OFFICIAL METHODS
 
         $ctrl.$onInit = function() {
+            $ctrl.internalItemTemplateUrl = $ctrl.itemTemplateUrl || defaultItemTemplateUrl;
             renderSelection();
             $ctrl.model.$render = renderSelection;
             $ctrl.adapter = $ctrl.adapter || function(item) {
@@ -275,7 +275,7 @@
             });
         }
 
-        open = _.debounce(function open() {
+        open = debounce(function() {
             $scope.$apply(function() {
                 $document.on('mousedown touchstart pointerdown', outsideClick);
                 $ctrl.active = true;
@@ -358,5 +358,23 @@
                 });
             }
         }
+
+        // Taken from David Walsh.
+        // https://davidwalsh.name/javascript-debounce-function
+        function debounce(func, wait, immediate) {
+            var timeout;
+            return function() {
+                var context = this;
+                var args = arguments;
+                var later = function() {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                var callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
+            };
+        };
     }
 }());
