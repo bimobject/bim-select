@@ -13,7 +13,6 @@ describe('bimSelect', function() {
     var scope;
 
     beforeEach(function() {
-        angular.mock.module('bim.select.templates');
         angular.mock.module('bim.select');
         angular.mock.inject(function($injector) {
             $rootScope = $injector.get('$rootScope');

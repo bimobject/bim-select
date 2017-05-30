@@ -8,9 +8,6 @@ const HEADLESS = ['Nightmare'];
 
 module.exports = function(config) {
     config.set({
-        preprocessors: {
-            'src/*.html': ['ng-html2js']
-        },
         frameworks: ['mocha', 'chai-dom', 'chai-as-promised', 'sinon-chai', 'chai'],
         files: [
             'bower_components/jquery/dist/jquery.js',
@@ -19,8 +16,7 @@ module.exports = function(config) {
             'bower_components/angular-vs-repeat/src/angular-vs-repeat.js',
             'bower_components/angular-mocks/angular-mocks.js',
             'lib/style-assertions.js',
-            'src/*.js',
-            'src/*.html'
+            'src/*.js'
         ],
 
         browsers: ALL ? BROWSERS : HEADLESS,
@@ -32,11 +28,6 @@ module.exports = function(config) {
             width: 1000,
             height: 600,
             title: 'Unit test runner'
-        },
-
-        ngHtml2JsPreprocessor: {
-            prependPrefix: '/',
-            moduleName: 'bim.select.templates'
         }
     });
 };
