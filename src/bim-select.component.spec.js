@@ -1,8 +1,6 @@
 /* eslint-env mocha */
 /* global sinon, expect */
 
-// TODO: switch to use sinon.useFakeTimers instead of all the proimses.
-
 describe('bimSelect', function() {
     var $rootScope;
     var $compile;
@@ -38,11 +36,6 @@ describe('bimSelect', function() {
                     .find('input')
                     .focus() // Chrome
                     .click(); // FF and IE
-
-                return new Promise(function(resolve, reject) {
-                    // Await debounce
-                    setTimeout(resolve, 60);
-                });
             };
             this.filter = function(filter) {
                 angular
@@ -54,11 +47,6 @@ describe('bimSelect', function() {
                     .trigger('input')
                     // trident (ie11)
                     .trigger('change');
-
-                return new Promise(function(resolve, reject) {
-                    // Await debounce
-                    setTimeout(resolve, 60);
-                });
             };
             this.lis = function() {
                 return Array.prototype.slice.call(this.element.querySelectorAll('li'), 1, -1);
@@ -116,37 +104,46 @@ describe('bimSelect', function() {
             beforeEach(function() {
                 this.element = createElement();
                 this.click = function() {
-                    angular.element(this.element).find('.bim-select--toggle').click();
+                    angular.element(this.element)
+                        .find('.bim-select--toggle')
+                        .triggerHandler('click');
                     scope.$digest();
-                    return new Promise(function(resolve, reject) {
-                        setTimeout(resolve, 60);
-                    });
                 };
             });
             it('opens the popup', function() {
-                return this.click().then(function() {
-                    expect(this.element.querySelector('.dropdown')).to.have.class('open');
-                }.bind(this));
+                this.click();
+                expect(this.element.querySelector('.dropdown')).to.have.class('open');
             });
             it('toggles', function() {
-                return this.click().then(function() {
-                    return this.click().then(function() {
-                        expect(this.element.querySelector('.dropdown')).to.not.have.class('open');
-                    }.bind(this));
-                }.bind(this));
+                this.click();
+                this.click();
+                expect(this.element.querySelector('.dropdown')).to.not.have.class('open');
             });
             it('set focus to the input', function() {
                 var input = this.element.querySelector('input');
-                return this.click().then(function() {
-                    expect(document.activeElement).to.equal(input);
-                });
+                this.click();
+                expect(document.activeElement).to.equal(input);
             });
             it('clears the input text', function() {
                 scope.items = [{ id: 'id', text: 'Glenn' }];
                 scope.value = scope.items[0];
-                return this.click().then(function() {
-                    expect(this.element.querySelector('input')).to.be.empty;
-                }.bind(this));
+                this.click();
+                expect(this.element.querySelector('input')).to.be.empty;
+            });
+            context('with a preselected value', function() {
+                beforeEach(function() {
+                    scope.items = [
+                        { id: 1, text: 'Glenn' },
+                        { id: 2, text: 'Miliam' },
+                        { id: 3, text: 'Sigyn' }
+                    ];
+                    scope.value = scope.items[0];
+                    this.element = createElement();
+                });
+                it('renders all items', function() {
+                    this.click();
+                    expect(this.lis()).to.have.length(3);
+                });
             });
         });
         context('when items are updated', function() {
@@ -169,7 +166,7 @@ describe('bimSelect', function() {
             beforeEach(function() {
                 scope.items = [];
                 scope.change = sinon.stub();
-                return this.open();
+                this.open();
             });
             it('shows a message to the user', function() {
                 // Get first real match.
@@ -199,35 +196,29 @@ describe('bimSelect', function() {
             });
         });
         context('when focus on the input', function() {
-            it('opens the dropdown', function(done) {
-                this.open().then(function() {
-                    var dropdown = this.element.querySelector('.dropdown');
-                    expect(dropdown).to.have.class('open');
-                    done();
-                }.bind(this));
+            it('opens the dropdown', function() {
+                this.open();
+                var dropdown = this.element.querySelector('.dropdown');
+                expect(dropdown).to.have.class('open');
             });
-            it('force vs-repeat to rerender', function(done) {
+            it('force vs-repeat to rerender', function() {
                 // And we need to do it when the DOM has rendered ($timeout) so vs-repeat
                 // can calculate the height.
                 var spy = sinon.spy();
-                this.open().then(function() {
-                    var $element = angular.element(this.element);
-                    $element.find('[vs-repeat]').scope().$on('vsRepeatResize', spy);
-                    $timeout.flush();
-                    expect(spy).to.have.been.calledOnce;
-                    done();
-                }.bind(this));
+                this.open();
+                var $element = angular.element(this.element);
+                $element.find('[vs-repeat]').scope().$on('vsRepeatResize', spy);
+                $timeout.flush();
+                expect(spy).to.have.been.calledOnce;
             });
             context('with a selected value', function() {
-                beforeEach(function(done) {
+                beforeEach(function() {
                     scope.items = [
                         { id: 1, text: 'Glenn' },
                         { id: 2, text: 'Sigyn' }
                     ];
                     scope.value = scope.items[0];
-                    this.open().then(function() {
-                        done();
-                    });
+                    this.open();
                 });
                 it('empties the input field', function() {
                     var input = this.element.querySelector('input');
@@ -240,10 +231,12 @@ describe('bimSelect', function() {
                         scope.$digest();
                     });
                     it('closes the dropdown', function() {
-                        expect(this.element.querySelector('.dropdown')).to.not.have.class('open');
+                        expect(this.element.querySelector('.dropdown'))
+                        .to.not.have.class('open');
                     });
                     it('shows the selected model text', function() {
-                        expect(this.element.querySelector('input')).to.have.value(scope.value.text);
+                        expect(this.element.querySelector('input'))
+                        .to.have.value(scope.value.text);
                     });
                 });
                 context('when pressing escape', function() {
@@ -252,10 +245,12 @@ describe('bimSelect', function() {
                         this.pressEscape();
                     });
                     it('closes the dropdown', function() {
-                        expect(this.element.querySelector('.dropdown')).to.not.have.class('open');
+                        expect(this.element.querySelector('.dropdown'))
+                        .to.not.have.class('open');
                     });
                     it('shows the selected model text', function() {
-                        expect(this.element.querySelector('input')).to.have.value(scope.value.text);
+                        expect(this.element.querySelector('input'))
+                        .to.have.value(scope.value.text);
                     });
                 });
             });
@@ -387,23 +382,21 @@ describe('bimSelect', function() {
                             this.pressEnter();
                             expect(scope.change).to.have.been.calledOnce;
                             expect(scope.change.firstCall).to.have.been
-                                .calledWith(sinon.match({ text: 'Glenn' }));
+                            .calledWith(sinon.match({ text: 'Glenn' }));
                         });
                     });
                 });
             });
         });
         context('with scrolling items', function() {
-            beforeEach(function(done) {
+            beforeEach(function() {
                 scope.items = new Array(500).map(function(_item, index) {
                     return {
                         id: index,
                         text: 'Item ' + (index + 1)
                     };
                 });
-                this.open().then(function() {
-                    done();
-                });
+                this.open();
             });
             context('when scrolled down', function() {
                 beforeEach(function() {
@@ -414,15 +407,14 @@ describe('bimSelect', function() {
                         this.filter('I'); // filter that still has a scrollbar
                     });
                     it('resets the scrolling', function() {
-                        expect(this.element.querySelector('ul')).to.have.property('scrollTop', 0);
+                        expect(this.element.querySelector('ul'))
+                        .to.have.property('scrollTop', 0);
                     });
                 });
                 context('when closing and opening again', function() {
-                    beforeEach(function(done) {
+                    beforeEach(function() {
                         angular.element(document).trigger('mousedown');
-                        this.open().then(function() {
-                            done();
-                        });
+                        this.open();
                     });
                     it('resets the activeIndex', function() {
                         var controller = angular.element(this.element).controller('bimSelect');
@@ -558,16 +550,10 @@ describe('bimSelect', function() {
         });
         context('when pressing escape and starts typing again', function() {
             beforeEach(function() {
-                return this.open();
-            });
-            beforeEach(function() {
-                return this.filter('gle');
-            });
-            beforeEach(function() {
+                this.open();
+                this.filter('gle');
                 this.pressEscape();
-                return this.filter('glen');
-            });
-            beforeEach(function() {
+                this.filter('glen');
                 $timeout.flush();
             });
             it('opens', function() {
@@ -594,9 +580,8 @@ describe('bimSelect', function() {
                         text: item.name.substr(0, 1)
                     };
                 };
-                return this.open().then(function() {
-                    expect(this.texts()).to.deep.equal(['A', 'M', 'G']);
-                }.bind(this));
+                this.open();
+                expect(this.texts()).to.deep.equal(['A', 'M', 'G']);
             });
             it('uses the adapter to set the input field value', function() {
                 scope.items = [{ id: 1, name: 'Glenn' }];
@@ -706,15 +691,13 @@ describe('bimSelect', function() {
             });
         });
         context('when clicking clear', function() {
-            beforeEach(function(done) {
+            beforeEach(function() {
                 scope.items = [{ text: 'glenn', id: 1 }];
                 scope.change = sinon.stub();
                 scope.value = scope.items[0];
-                this.open().then(function() {
-                    this.element.querySelector('.bim-select--clear').click();
-                    scope.$digest();
-                    done();
-                }.bind(this));
+                this.open();
+                this.element.querySelector('.bim-select--clear').click();
+                scope.$digest();
             });
             it('clears the model', function() {
                 expect(scope.value).to.be.null;
@@ -758,7 +741,8 @@ describe('bimSelect', function() {
                     expect(this.element.querySelector('.bim-select--clear')).to.not.exist;
                 });
                 it('the toggler is disabled', function() {
-                    expect(this.element.querySelector('.bim-select--toggle')).to.have.property('disabled', true);
+                    expect(this.element.querySelector('.bim-select--toggle'))
+                        .to.have.property('disabled', true);
                 });
             });
             context('is false', function() {
@@ -767,13 +751,16 @@ describe('bimSelect', function() {
                     scope.$digest();
                 });
                 it('the input is enabled', function() {
-                    expect(this.element.querySelector('input')).to.have.property('disabled', false);
+                    expect(this.element.querySelector('input'))
+                        .to.have.property('disabled', false);
                 });
                 it('the clear button is enabled', function() {
-                    expect(this.element.querySelector('.bim-select--clear')).to.have.property('disabled', false);
+                    expect(this.element.querySelector('.bim-select--clear'))
+                        .to.have.property('disabled', false);
                 });
                 it('the toggler is enabled', function() {
-                    expect(this.element.querySelector('.bim-select--toggle')).to.have.property('disabled', false);
+                    expect(this.element.querySelector('.bim-select--toggle'))
+                        .to.have.property('disabled', false);
                 });
             });
         });

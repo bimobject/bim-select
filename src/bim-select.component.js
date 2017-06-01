@@ -158,7 +158,6 @@
         $attrs
     ) {
         var $ctrl = this;
-        var open;
         var currentJoinedInternalIds = null;
         var defaultItemTemplateUrl = '/bim-select/item.html';
         var ul = $element[0].querySelector('ul');
@@ -176,7 +175,7 @@
             $document.off('mousedown touchstart pointerdown', outsideClick);
         });
 
-        // OFFICIAL METHODS
+        // ANGULAR METHODS
 
         $ctrl.$onInit = function() {
             $ctrl.internalItemTemplateUrl = $ctrl.itemTemplateUrl || defaultItemTemplateUrl;
@@ -206,16 +205,19 @@
         // TEMPLATE METHODS
 
         $ctrl.activateHandler = function(event) {
-            event.stopPropagation();
+            event && event.stopPropagation();
             $ctrl.inputValue = '';
 
             open();
         };
 
         $ctrl.toggleHandler = function() {
-            if ($element.find('.dropdown').hasClass('open')) {
+            if ($ctrl.active) {
                 $ctrl.close();
             } else {
+                // For some reason the .focus below does not trigger activateHandler
+                // when running in a normal browser window, so invoke it manually.
+                $ctrl.activateHandler();
                 $element.find('input').focus();
             }
         };
@@ -320,17 +322,17 @@
             });
         }
 
-        open = debounce(function() {
-            $scope.$apply(function() {
-                $document.on('mousedown touchstart pointerdown', outsideClick);
+        function open() {
+            if (!$ctrl.active) {
                 $ctrl.active = true;
+                $document.on('mousedown touchstart pointerdown', outsideClick);
                 updateMatches();
-            });
-            $timeout(function() {
-                // Force rerender of virtual scroll. Needed for at least IE11.
-                $scope.$broadcast('vsRepeatResize');
-            });
-        }, 50);
+                $timeout(function() {
+                    // Force rerender of virtual scroll. Needed for at least IE11.
+                    $scope.$broadcast('vsRepeatResize');
+                });
+            }
+        };
 
         function updateMatches() {
             $ctrl.activeIndex = -1;
@@ -403,23 +405,5 @@
                 });
             }
         }
-
-        // Taken from David Walsh.
-        // https://davidwalsh.name/javascript-debounce-function
-        function debounce(func, wait, immediate) {
-            var timeout;
-            return function() {
-                var context = this;
-                var args = arguments;
-                var later = function() {
-                    timeout = null;
-                    if (!immediate) func.apply(context, args);
-                };
-                var callNow = immediate && !timeout;
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-                if (callNow) func.apply(context, args);
-            };
-        };
     }
 }());
