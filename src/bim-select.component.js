@@ -327,6 +327,7 @@
                 $ctrl.active = true;
                 $document.on('mousedown touchstart pointerdown', outsideClick);
                 updateMatches();
+                setWidth();
                 $timeout(function() {
                     // Force rerender of virtual scroll. Needed for at least IE11.
                     $scope.$broadcast('vsRepeatResize');

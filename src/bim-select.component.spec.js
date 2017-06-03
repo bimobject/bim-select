@@ -535,6 +535,27 @@ describe('bimSelect', function() {
                 expect(texts).to.deep.equal(['Glenn', 'Miliam', 'Sigyn']);
             });
         });
+        context('when opening, closing, resizing and opening again', function() {
+            beforeEach(function() {
+                this.open();
+                var group = this.element.querySelector('.input-group');
+                group.style.width = '400px';
+
+                angular.element(document).trigger('mousedown');
+                scope.$digest();
+
+                var group = this.element.querySelector('.input-group');
+                group.style.width = '600px';
+            });
+            it('is correctly sized', function() {
+                var ul = this.element.querySelector('ul');
+                expect(ul).to.not.have.style('width', '600px');
+
+                this.open(true);
+
+                expect(ul).to.have.style('width', '600px');
+            });
+        });
         context('when opening, closing and opening and closing again', function() {
             beforeEach(function() {
                 this.open();
