@@ -544,7 +544,6 @@ describe('bimSelect', function() {
                 angular.element(document).trigger('mousedown');
                 scope.$digest();
 
-                var group = this.element.querySelector('.input-group');
                 group.style.width = '600px';
             });
             it('is correctly sized', function() {
