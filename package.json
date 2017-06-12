@@ -9,7 +9,9 @@
     "test:unit": "karma start",
     "test:unit:watch": "karma start --no-single-run --auto-watch",
     "lint": "eslint src/*.js",
-    "build": "node ./tools/bower-sync.js && webpack"
+    "build": "node ./tools/bower-sync.js && webpack",
+    "changelog": "node ./tools/bower-sync.js && conventional-changelog -p angular -i CHANGELOG.md -s",
+    "version": "conventional-recommended-bump -p angular"
   },
   "repository": {
     "type": "git",
@@ -31,6 +33,8 @@
     "babel-preset-env": "^1.5.2",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.1.0",
+    "conventional-changelog-cli": "^1.3.1",
+    "conventional-recommended-bump": "^1.0.0",
     "css-loader": "^0.28.4",
     "es6-promise": "^4.1.0",
     "eslint": "^3.19.0",
