@@ -4,7 +4,14 @@ const DEBUG = process.argv.includes('--debug');
 const ALL = process.argv.includes('--all');
 
 const BROWSERS = ['Nightmare', 'Edge', 'IE', 'Firefox', 'Chrome'];
-const HEADLESS = ['ChromeCanaryHeadless'];
+const HEADLESS = ['Nightmare'];
+const CI = !!process.env.CI;
+
+let browsers = CI
+    ? HEADLESS
+    : ALL
+        ? BROWSERS
+        : HEADLESS;
 
 const webpackConfig = require('./webpack.config.js');
 // Do not assume someone else loaded deps in the tests.
@@ -23,7 +30,9 @@ module.exports = function(config) {
             [testFile]: ['webpack']
         },
 
-        browsers: ALL ? BROWSERS : HEADLESS,
+        reporters: CI ? 'dots' : 'progress',
+
+        browsers: browsers,
         singleRun: true,
 
         nightmareOptions: {
