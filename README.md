@@ -1,5 +1,5 @@
 [![Build](https://img.shields.io/circleci/project/github/bimobject/bim-select/master.svg)](https://circleci.com/gh/bimobject/bim-select/tree/master)
-[![npm](https://img.shields.io/npm/v/bim-select.svg)](https://www.npmjs.com/package/select)
+[![npm](https://img.shields.io/npm/v/bim-select.svg)](https://www.npmjs.com/package/bim-select)
 [![Bower](https://img.shields.io/bower/v/bim-select.svg)](https://github.com/bimobject/bim-select)
 
 # bim-select
