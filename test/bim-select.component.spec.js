@@ -1,5 +1,8 @@
 /* eslint-env mocha */
 /* global sinon, expect */
+const angular = require('angular');
+
+require('../src/bim-select.module.js');
 
 describe('bimSelect', function() {
     var $rootScope;

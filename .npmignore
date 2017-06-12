@@ -1,0 +1,7 @@
+**/.*
+test
+tools
+node_modules
+bower_components
+karma.conf.js
+webpack.config.js

@@ -1,14 +1,22 @@
 {
-  "name": "bim-select",
-  "description": "A dropdown/select solution for angular that handles millions of items without lag.",
-  "main": [
-    "src/bim-select.component.js",
-    "src/bim-select.css"
-  ],
   "authors": [
     "Glenn Jorde <glenn@tregusti.com> (https://github.com/tregusti)"
   ],
-  "license": "ISC",
+  "ignore": [
+    "**/.*",
+    "test",
+    "tools",
+    "node_modules",
+    "bower_components",
+    "karma.conf.js",
+    "webpack.config.js"
+  ],
+  "dependencies": {
+    "angular": "^1.5.11",
+    "angular-vs-repeat": "^1.1.7",
+    "jquery": ">=2"
+  },
+  "description": "A dropdown/select solution for angular 1 that handles millions of items without lag.",
   "keywords": [
     "angular",
     "dropdown",
@@ -16,23 +24,7 @@
     "virtual",
     "scroll"
   ],
-  "homepage": "https://github.com/bimobject/bim-select",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "karma.conf.js",
-    "lib"
-  ],
-  "dependencies": {
-    "angular": "1.x",
-    "angular-vs-repeat": "^1.1.7",
-    "bootstrap": "^3.3.6",
-    "font-awesome": "^4.0.0",
-    "jquery": ">=2"
-  },
-  "devDependencies": {
-    "angular-mocks": "1.x",
-    "es6-promise": "^4.0.5"
-  }
+  "license": "ISC",
+  "main": "dist/bim-select.js",
+  "name": "bim-select"
 }

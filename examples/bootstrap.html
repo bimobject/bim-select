@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <title>Example of bim-select using bootstrap</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
-    <link rel="stylesheet" href="../bower_components/font-awesome/css/font-awesome.css">
-    <link rel="stylesheet" href="../src/bim-select.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v3.3.7/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/FortAwesome/Font-Awesome/945e8bbd/css/font-awesome.css">
 </head>
 <body ng-controller="ExampleController as vm">
     <div class="container">
@@ -22,10 +21,11 @@
         <label for="dis">Simulate disabled state</label>
     </div>
 
-    <script src="../bower_components/jquery/dist/jquery.js"></script>
-    <script src="../bower_components/angular/angular.js"></script>
-    <script src="../bower_components/angular-vs-repeat/src/angular-vs-repeat.js"></script>
-    <script src="../src/bim-select.component.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="https://cdn.rawgit.com/kamilkp/angular-vs-repeat/v1.1.7/src/angular-vs-repeat.min.js"></script>
+
+    <script src="../dist/bim-select.js"></script>
     <script>
     angular
         .module('app', ['bim.select'])

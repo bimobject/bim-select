@@ -4,20 +4,24 @@ const DEBUG = process.argv.includes('--debug');
 const ALL = process.argv.includes('--all');
 
 const BROWSERS = ['Nightmare', 'Edge', 'IE', 'Firefox', 'Chrome'];
-const HEADLESS = ['Nightmare'];
+const HEADLESS = ['ChromeCanaryHeadless'];
+
+const webpackConfig = require('./webpack.config.js');
+// Do not assume someone else loaded deps in the tests.
+// We load them explicitly.
+delete webpackConfig.externals;
+// Change source map style
+webpackConfig.devtool = 'cheap-module-eval-source-map';
 
 module.exports = function(config) {
+    const testFile = 'test/index.js';
+
     config.set({
         frameworks: ['mocha', 'chai-dom', 'chai-as-promised', 'sinon-chai', 'chai'],
-        files: [
-            'bower_components/jquery/dist/jquery.js',
-            'bower_components/es6-promise/es6-promise.auto.js',
-            'bower_components/angular/angular.js',
-            'bower_components/angular-vs-repeat/src/angular-vs-repeat.js',
-            'bower_components/angular-mocks/angular-mocks.js',
-            'lib/style-assertions.js',
-            'src/*.js'
-        ],
+        files: [testFile],
+        preprocessors: {
+            [testFile]: ['webpack']
+        },
 
         browsers: ALL ? BROWSERS : HEADLESS,
         singleRun: true,
@@ -28,6 +32,8 @@ module.exports = function(config) {
             width: 1000,
             height: 600,
             title: 'Unit test runner'
-        }
+        },
+
+        webpack: webpackConfig
     });
 };
