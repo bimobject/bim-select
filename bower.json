@@ -16,7 +16,7 @@
     "angular-vs-repeat": "^1.1.7",
     "jquery": ">=2"
   },
-  "description": "A dropdown/select solution for angular 1 that handles millions of items without lag.",
+  "description": "A dropdown/select solution for Angular.js that handles millions of items without lag.",
   "keywords": [
     "angular",
     "dropdown",
