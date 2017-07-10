@@ -30,7 +30,6 @@
         role="listbox"
         ng-style="{ width: $ctrl.width }">
         <li role="option"
-            data-id="{{ match.id }}"
             ng-repeat="match in $ctrl.matches track by match.id"
             ng-click="$ctrl.select($event, match)"
             ng-class="{ active: match.index === $ctrl.activeIndex }">
