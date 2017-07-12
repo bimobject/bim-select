@@ -13,12 +13,20 @@
         <h2>Using bootstrap</h2>
 
         <bim-select items="vm.countries"
-                    adapter="vm.adapter"
-                    ng-model="vm.value"
+                    adapter="vm.countryAdapter"
+                    ng-model="vm.countryValue"
                     ng-disabled="vm.disabled"></bim-select>
 
         <input type="checkbox" id="dis" ng-model="vm.disabled">
         <label for="dis">Simulate disabled state</label>
+
+
+        <h2>Using null value</h2>
+
+        <bim-select items="vm.names"
+                    ng-model="vm.nameValue"
+                    adapter="vm.nameAdapter"></bim-select>
+        <p>Selected value: <span ng-bind="vm.nameValue | json"></span></p>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -30,18 +38,33 @@
     angular
         .module('app', ['bim.select'])
         .controller('ExampleController', function() {
+            // COUNTRIES
             this.countries = [
                 { name: 'Denmark', code: 'dk' },
                 { name: 'Sweden', code: 'sv' },
                 { name: 'Finland', code: 'fi' },
                 { name: 'Norway', code: 'no' },
             ]
-            this.value = this.countries[1];
-            this.adapter = function(item) {
+            this.countryValue = this.countries[1];
+            this.countryAdapter = function(item) {
                 return {
                     text: item.name,
                     id: item.code
                 }
+            }
+
+            // NAMES
+            this.names = [
+                { id: null, text: 'Empty' },
+                { id: 1, text: 'Name 1' },
+                { id: 2, text: 'Name 2' }
+            ];
+            this.nameValue = null;
+            this.nameAdapter = function(item) {
+                return {
+                    id: String(item.id),
+                    text: item.text
+                };
             }
         })
     </script>
