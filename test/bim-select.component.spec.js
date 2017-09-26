@@ -242,11 +242,11 @@ describe('bimSelect', function() {
                     });
                     it('closes the dropdown', function() {
                         expect(this.element.querySelector('.dropdown'))
-                        .to.not.have.class('open');
+                            .to.not.have.class('open');
                     });
                     it('shows the selected model text', function() {
                         expect(this.element.querySelector('input'))
-                        .to.have.value(scope.value.text);
+                            .to.have.value(scope.value.text);
                     });
                 });
                 context('when pressing escape', function() {
@@ -256,11 +256,11 @@ describe('bimSelect', function() {
                     });
                     it('closes the dropdown', function() {
                         expect(this.element.querySelector('.dropdown'))
-                        .to.not.have.class('open');
+                            .to.not.have.class('open');
                     });
                     it('shows the selected model text', function() {
                         expect(this.element.querySelector('input'))
-                        .to.have.value(scope.value.text);
+                            .to.have.value(scope.value.text);
                     });
                 });
             });
@@ -392,7 +392,7 @@ describe('bimSelect', function() {
                             this.pressEnter();
                             expect(scope.change).to.have.been.calledOnce;
                             expect(scope.change.firstCall).to.have.been
-                            .calledWith(sinon.match({ text: 'Glenn' }));
+                                .calledWith(sinon.match({ text: 'Glenn' }));
                         });
                     });
                 });
@@ -418,7 +418,7 @@ describe('bimSelect', function() {
                     });
                     it('resets the scrolling', function() {
                         expect(this.element.querySelector('ul'))
-                        .to.have.property('scrollTop', 0);
+                            .to.have.property('scrollTop', 0);
                     });
                 });
                 context('when closing and opening again', function() {
@@ -469,7 +469,7 @@ describe('bimSelect', function() {
                 expect(element.querySelector('input')).to.have.value('Miliam');
             });
         });
-        context('without initial model value of', function() {
+        context('with initial model value of', function() {
             beforeEach(function() {
                 scope.items = [
                     { id: 1, text: 'Glenn' }
