@@ -1,3 +1,18 @@
+<a name="2.1.0"></a>
+# [2.1.0](https://github.com/bimobject/bim-select/compare/v2.0.0...v2.1.0) (2017-09-26)
+
+
+### Bug Fixes
+
+* **html:** Remove unused attribute ([46c11a4](https://github.com/bimobject/bim-select/commit/46c11a4))
+
+
+### Features
+
+* **placeholder:** Support custom placeholder ([cdde3cf](https://github.com/bimobject/bim-select/commit/cdde3cf))
+
+
+
 <a name="2.0.0"></a>
 # [2.0.0](https://github.com/bimobject/bim-select/compare/v1.0.1...v2.0.0) (2017-06-12)
 
