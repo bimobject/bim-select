@@ -29,6 +29,12 @@
         <p>Selected value: <span ng-bind="vm.nameValue | json"></span></p>
 
 
+        <h2>Having no items</h2>
+
+        <bim-select items="vm.empty" ng-model="vm.emptyValue"></bim-select>
+        <p>Selected value: <span ng-bind="vm.emptyValue | json"></span></p>
+
+
         <h2>Custom placeholder</h2>
 
         <bim-select items="vm.countries"
