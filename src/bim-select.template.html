@@ -2,6 +2,7 @@
     <div class="input-group">
         <input class="form-control"
                type="text"
+               placeholder="{{ $ctrl.placeholderText() }}"
                ng-keydown="$ctrl.keydownHandler($event)"
                ng-click="$ctrl.activateHandler($event)"
                ng-blur="$ctrl.deactivateHandler($event)"

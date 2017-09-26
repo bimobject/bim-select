@@ -176,10 +176,17 @@ describe('bimSelect', function() {
                 var li = this.element.querySelector('li:nth-child(2)');
                 expect(li).to.contain.text('No options');
             });
-            it('does not allow user to select the message item', function() {
-                this.element.querySelector('li:nth-child(2) .bim-select-item').click();
-                scope.$digest();
-                expect(scope.change).to.not.have.been.called;
+            context('when user clicks the message', function() {
+                beforeEach(function() {
+                    this.element.querySelector('li:nth-child(2) .bim-select-item').click();
+                    scope.$digest();
+                });
+                it('does not allow user to select the message item', function() {
+                    expect(scope.change).to.not.have.been.called;
+                });
+                it('does not render any text value', function() {
+                    expect(this.element.querySelector('input')).to.have.property('value', '');
+                });
             });
             it('does not allow the user to highlight the message item', function() {
                 var active = this.pressDown();
@@ -472,12 +479,12 @@ describe('bimSelect', function() {
             it('null render an empty control', function() {
                 scope.value = null;
                 var element = createElement();
-                expect(element.querySelector('input')).to.have.value('No selection');
+                expect(element.querySelector('input')).to.have.value('');
             });
             it('undefined render an empty control', function() {
                 scope.value = undefined;
                 var element = createElement();
-                expect(element.querySelector('input')).to.have.value('No selection');
+                expect(element.querySelector('input')).to.have.value('');
             });
         });
         context('when clicking first item', function() {
@@ -731,8 +738,8 @@ describe('bimSelect', function() {
             it('closes the list', function() {
                 expect(this.element.querySelector('.dropdown')).to.not.have.class('open');
             });
-            it('renders the appropriate text', function() {
-                expect(this.element.querySelector('input')).to.have.value('No selection');
+            it('clears the text', function() {
+                expect(this.element.querySelector('input')).to.have.value('');
             });
             it('removes the clear button', function() {
                 expect(this.element.querySelector('.bim-select--clear')).to.not.exist;
@@ -784,6 +791,25 @@ describe('bimSelect', function() {
                 it('the toggler is enabled', function() {
                     expect(this.element.querySelector('.bim-select--toggle'))
                         .to.have.property('disabled', false);
+                });
+            });
+        });
+        describe('placeholder', function() {
+            context('when not specified', function() {
+                it('uses the default', function() {
+                    var element = createElement();
+                    expect(element.querySelector('input')).to.have.property('placeholder', 'No selection');
+                });
+            });
+            context('when specified', function() {
+                it('is used', function() {
+                    var element = createElement('\
+                        <bim-select class="bim-select-spec" \
+                            ng-model="value" \
+                            placeholder="My string" \
+                            items="items" \
+                        ></bim-select>');
+                    expect(element.querySelector('input')).to.have.property('placeholder', 'My string');
                 });
             });
         });

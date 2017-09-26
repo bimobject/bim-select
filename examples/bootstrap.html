@@ -27,6 +27,15 @@
                     ng-model="vm.nameValue"
                     adapter="vm.nameAdapter"></bim-select>
         <p>Selected value: <span ng-bind="vm.nameValue | json"></span></p>
+
+
+        <h2>Custom placeholder</h2>
+
+        <bim-select items="vm.countries"
+                    ng-model="vm.placeholderValue"
+                    placeholder="Select a country…"
+                    adapter="vm.countryAdapter"></bim-select>
+        <p>Selected value: <span ng-bind="vm.placeholderValue | json"></span></p>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>

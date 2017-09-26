@@ -132,6 +132,7 @@ function BimSelectController(
     };
 
     $ctrl.internalItems = [];
+    $ctrl.defaultPlaceholder = 'No selection';
 
     $scope.$on('$destroy', function() {
         $document.off('mousedown touchstart pointerdown', outsideClick);
@@ -261,6 +262,8 @@ function BimSelectController(
             !$ctrl.isRequired();
     };
 
+    $ctrl.placeholderText = () => $attrs.placeholder || $ctrl.defaultPlaceholder;
+
     // INTERNAL HELPERS
 
     function ensureVisibleItem() {
@@ -348,7 +351,7 @@ function BimSelectController(
 
     function renderSelection() {
         if ($ctrl.model.$modelValue === undefined || $ctrl.model.$modelValue === null) {
-            $ctrl.inputValue = 'No selection';
+            $ctrl.inputValue = '';
         } else {
             $ctrl.inputValue = $ctrl.model.$modelValue && $ctrl.adapter($ctrl.model.$modelValue).text;
         }
