@@ -32,7 +32,7 @@ module.exports = function(config) {
 
         reporters: CI ? 'dots' : 'progress',
 
-        browsers: browsers,
+        browsers,
         singleRun: true,
 
         nightmareOptions: {

@@ -5,13 +5,13 @@ const angular = require('angular');
 require('../src/bim-select.module.js');
 
 describe('bimSelect', function() {
-    var $rootScope;
-    var $compile;
-    var $templateCache;
-    var $timeout;
-    var container;
-    var styles;
-    var scope;
+    let $rootScope;
+    let $compile;
+    let $templateCache;
+    let $timeout;
+    let container;
+    let styles;
+    let scope;
 
     beforeEach(function() {
         angular.mock.module('bim.select');
@@ -56,7 +56,7 @@ describe('bimSelect', function() {
             };
             this.press = function(which) {
                 this.event = angular.element.Event('keydown', {
-                    which: which
+                    which
                 });
                 sinon.spy(this.event, 'preventDefault');
 
@@ -67,15 +67,15 @@ describe('bimSelect', function() {
 
                 scope.$digest();
 
-                var li = this.element.querySelector('li.active');
-                var lis = [].slice.call(this.element.querySelectorAll('li'), 1, -1);
-                var index = lis.indexOf(li);
+                const li = this.element.querySelector('li.active');
+                const lis = [].slice.call(this.element.querySelectorAll('li'), 1, -1);
+                const index = lis.indexOf(li);
 
                 if (index === -1) {
                     return null;
                 }
 
-                var active = angular.element(li.parentNode).scope().$ctrl.matches[index];
+                const active = angular.element(li.parentNode).scope().$ctrl.matches[index];
                 return active.model;
             };
 
@@ -89,12 +89,12 @@ describe('bimSelect', function() {
                 { id: 1, text: 'Glenn' },
                 { id: 2, text: 'Miliam' }
             ];
-            var element = createElement('<bim-select ng-model="value" items="items"></bim-select>');
+            const element = createElement('<bim-select ng-model="value" items="items"></bim-select>');
             // vs-repeat pads with 2. so 4 instead of 2.
             expect(element.querySelectorAll('ul>li')).to.have.length(4);
         });
         it('uses virtual scroll on the list', function() {
-            var element = createElement('<bim-select ng-model="value"></bim-select>');
+            const element = createElement('<bim-select ng-model="value"></bim-select>');
             expect(element.querySelector('ul')).to.have.attribute('vs-repeat');
         });
         it('does not modify the item object', function() {
@@ -123,7 +123,7 @@ describe('bimSelect', function() {
                 expect(this.element.querySelector('.dropdown')).to.not.have.class('open');
             });
             it('set focus to the input', function() {
-                var input = this.element.querySelector('input');
+                const input = this.element.querySelector('input');
                 this.click();
                 expect(document.activeElement).to.equal(input);
             });
@@ -173,7 +173,7 @@ describe('bimSelect', function() {
             });
             it('shows a message to the user', function() {
                 // Get first real match.
-                var li = this.element.querySelector('li:nth-child(2)');
+                const li = this.element.querySelector('li:nth-child(2)');
                 expect(li).to.contain.text('No options');
             });
             context('when user clicks the message', function() {
@@ -189,7 +189,7 @@ describe('bimSelect', function() {
                 });
             });
             it('does not allow the user to highlight the message item', function() {
-                var active = this.pressDown();
+                const active = this.pressDown();
                 expect(active).to.be.null;
             });
         });
@@ -201,22 +201,22 @@ describe('bimSelect', function() {
             });
             it('shows a message to the user', function() {
                 // Get first real match.
-                var li = this.element.querySelectorAll('li')[1];
+                const li = this.element.querySelectorAll('li')[1];
                 expect(li).to.contain.text('No matches');
             });
         });
         context('when focus on the input', function() {
             it('opens the dropdown', function() {
                 this.open();
-                var dropdown = this.element.querySelector('.dropdown');
+                const dropdown = this.element.querySelector('.dropdown');
                 expect(dropdown).to.have.class('open');
             });
             it('force vs-repeat to rerender', function() {
                 // And we need to do it when the DOM has rendered ($timeout) so vs-repeat
                 // can calculate the height.
-                var spy = sinon.spy();
+                const spy = sinon.spy();
                 this.open();
-                var $element = angular.element(this.element);
+                const $element = angular.element(this.element);
                 $element.find('[vs-repeat]').scope().$on('vsRepeatResize', spy);
                 $timeout.flush();
                 expect(spy).to.have.been.calledOnce;
@@ -231,7 +231,7 @@ describe('bimSelect', function() {
                     this.open();
                 });
                 it('empties the input field', function() {
-                    var input = this.element.querySelector('input');
+                    const input = this.element.querySelector('input');
                     expect(input).to.have.value('');
                 });
                 context('when leaving the dirty input field', function() {
@@ -286,7 +286,7 @@ describe('bimSelect', function() {
                             this.open();
                         });
                         it('does not highlight any item', function() {
-                            var active = this.pressUp();
+                            const active = this.pressUp();
                             expect(active).to.be.null;
                         });
                     });
@@ -296,7 +296,7 @@ describe('bimSelect', function() {
                             this.pressDown();
                         });
                         it('does not change the highlighted item', function() {
-                            var active = this.pressUp();
+                            const active = this.pressUp();
                             expect(active).to.have.property('text', 'Glenn');
                         });
                     });
@@ -307,7 +307,7 @@ describe('bimSelect', function() {
                             this.pressDown();
                         });
                         it('highlights the first item', function() {
-                            var active = this.pressUp();
+                            const active = this.pressUp();
                             expect(active).to.have.property('text', 'Glenn');
                         });
                     });
@@ -319,7 +319,7 @@ describe('bimSelect', function() {
                             this.open();
                         });
                         it('highlights the first item', function() {
-                            var active = this.pressDown();
+                            const active = this.pressDown();
                             expect(active).to.have.property('text', 'Glenn');
                         });
                     });
@@ -329,7 +329,7 @@ describe('bimSelect', function() {
                             this.pressDown();
                         });
                         it('highlights the second', function() {
-                            var active = this.pressDown();
+                            const active = this.pressDown();
                             expect(active).to.have.property('text', 'Miliam');
                         });
                     });
@@ -339,7 +339,7 @@ describe('bimSelect', function() {
                             this.pressDown();
                             this.pressDown();
                             this.pressDown();
-                            var active = this.pressDown();
+                            const active = this.pressDown();
                             expect(active).to.have.property('text', 'Sigyn');
                         });
                         context('in a filtered list', function() {
@@ -351,7 +351,7 @@ describe('bimSelect', function() {
                                 this.pressDown();
                             });
                             it('it does not change the highlight', function() {
-                                var active = this.pressDown();
+                                const active = this.pressDown();
                                 expect(active).to.have.property('text', 'Miliam');
                             });
                         });
@@ -365,7 +365,7 @@ describe('bimSelect', function() {
                             this.filter('l');
                         });
                         it('highlights the first item', function() {
-                            var active = this.pressDown();
+                            const active = this.pressDown();
                             expect(active).to.have.property('text', 'Glenn');
                         });
                     });
@@ -403,7 +403,7 @@ describe('bimSelect', function() {
                 scope.items = new Array(500).map(function(_item, index) {
                     return {
                         id: index,
-                        text: 'Item ' + (index + 1)
+                        text: `Item ${index + 1}`
                     };
                 });
                 this.open();
@@ -427,7 +427,7 @@ describe('bimSelect', function() {
                         this.open();
                     });
                     it('resets the activeIndex', function() {
-                        var controller = angular.element(this.element).controller('bimSelect');
+                        const controller = angular.element(this.element).controller('bimSelect');
                         expect(controller).to.have.property('activeIndex', -1);
                     });
                     it('resets the scrolling', function() {
@@ -437,7 +437,7 @@ describe('bimSelect', function() {
             });
             context('when arrowing to highlight an item outside of the scroll area', function() {
                 beforeEach(function(done) {
-                    for (var i = 0; i < 15; i++) {
+                    for (let i = 0; i < 15; i++) {
                         this.pressDown();
                         $timeout.flush();
                     }
@@ -447,8 +447,8 @@ describe('bimSelect', function() {
                     // Skipped since it does not scroll down.
                     // TODO: Somewhere there is a hold up in the testing,
                     // implementation works it seems.
-                    var ul = this.element.querySelector('ul');
-                    var li = this.element.querySelector('li.active');
+                    const ul = this.element.querySelector('ul');
+                    const li = this.element.querySelector('li.active');
 
                     expect(li).to.contain.text('15');
                     expect(li.offsetTop).to.be.greater.than(ul.scrollTop);
@@ -465,7 +465,7 @@ describe('bimSelect', function() {
                 scope.value = scope.items[1];
             });
             it('renders the model value', function() {
-                var element = createElement();
+                const element = createElement();
                 expect(element.querySelector('input')).to.have.value('Miliam');
             });
         });
@@ -478,12 +478,12 @@ describe('bimSelect', function() {
             });
             it('null render an empty control', function() {
                 scope.value = null;
-                var element = createElement();
+                const element = createElement();
                 expect(element.querySelector('input')).to.have.value('');
             });
             it('undefined render an empty control', function() {
                 scope.value = undefined;
-                var element = createElement();
+                const element = createElement();
                 expect(element.querySelector('input')).to.have.value('');
             });
         });
@@ -518,7 +518,7 @@ describe('bimSelect', function() {
                     expect(scope.handler).to.have.been.calledOnce;
                 });
                 it('is invoked with the model value', function() {
-                    var glenn = scope.items[0];
+                    const glenn = scope.items[0];
                     expect(scope.handler).to.have.been.calledWith(glenn);
                 });
             });
@@ -538,8 +538,8 @@ describe('bimSelect', function() {
                 this.open();
             });
             it('will show all items', function() {
-                var lis = [].slice.call(this.element.querySelectorAll('li'), 1, -1);
-                var texts = lis.map(function(li) {
+                const lis = [].slice.call(this.element.querySelectorAll('li'), 1, -1);
+                const texts = lis.map(function(li) {
                     return li.textContent.trim();
                 });
                 expect(texts).to.deep.equal(['Glenn', 'Miliam', 'Sigyn']);
@@ -548,7 +548,7 @@ describe('bimSelect', function() {
         context('when opening, closing, resizing and opening again', function() {
             beforeEach(function() {
                 this.open();
-                var group = this.element.querySelector('.input-group');
+                const group = this.element.querySelector('.input-group');
                 group.style.width = '400px';
 
                 angular.element(document).trigger('mousedown');
@@ -557,7 +557,7 @@ describe('bimSelect', function() {
                 group.style.width = '600px';
             });
             it('is correctly sized', function() {
-                var ul = this.element.querySelector('ul');
+                const ul = this.element.querySelector('ul');
                 expect(ul).to.not.have.style('width', '600px');
 
                 this.open(true);
@@ -673,7 +673,7 @@ describe('bimSelect', function() {
                 scope.itemTemplateUrl = 'item.html';
                 $templateCache.put('item.html', '<custom>{{ match.text }}</custom>');
 
-                var element = createElement();
+                const element = createElement();
 
                 expect(element.querySelectorAll('li custom')).to.have.length(2);
             });
@@ -797,13 +797,13 @@ describe('bimSelect', function() {
         describe('placeholder', function() {
             context('when not specified', function() {
                 it('uses the default', function() {
-                    var element = createElement();
+                    const element = createElement();
                     expect(element.querySelector('input')).to.have.property('placeholder', 'No selection');
                 });
             });
             context('when specified', function() {
                 it('is used', function() {
-                    var element = createElement('\
+                    const element = createElement('\
                         <bim-select class="bim-select-spec" \
                             ng-model="value" \
                             placeholder="My string" \
@@ -822,9 +822,9 @@ describe('bimSelect', function() {
         });
         describe('init', function() {
             it('sets the width of the popup', function() {
-                var group = this.element.querySelector('.input-group');
+                const group = this.element.querySelector('.input-group');
                 group.style.width = '400px';
-                var ul = this.element.querySelector('ul');
+                const ul = this.element.querySelector('ul');
                 expect(ul).to.not.have.style('width', '400px');
 
                 this.controller.$onInit();
@@ -872,7 +872,7 @@ describe('bimSelect', function() {
                                         adapter="adapter" \
                             ></bim-select>';
         /* eslint-enable no-multi-str */
-        var elm = $compile(markup)(scope);
+        const elm = $compile(markup)(scope);
         container.appendChild(elm[0]);
         scope.$digest();
 

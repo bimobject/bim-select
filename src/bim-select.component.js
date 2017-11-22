@@ -100,7 +100,7 @@ exports.component = {
     require: {
         model: 'ngModel'
     },
-    templateUrl: templateUrl,
+    templateUrl,
     controller: BimSelectController
 };
 
@@ -119,17 +119,18 @@ function BimSelectController(
     $scope,
     $attrs
 ) {
-    var $ctrl = this;
-    var currentJoinedInternalIds = null;
-    var defaultItemTemplateUrl = itemTemplateUrl;
-    var ul = $element[0].querySelector('ul');
+    const $ctrl = this;
+    const defaultItemTemplateUrl = itemTemplateUrl;
+    const ul = $element[0].querySelector('ul');
 
-    var Keys = {
+    const Keys = {
         Escape: 27,
         Up: 38,
         Down: 40,
         Enter: 13
     };
+
+    let currentJoinedInternalIds = null;
 
     $ctrl.internalItems = [];
     $ctrl.defaultPlaceholder = 'No selection';
@@ -154,8 +155,8 @@ function BimSelectController(
     };
 
     $ctrl.$doCheck = function() {
-        var adaptedItems = adaptItems();
-        var ids = adaptedItems.map(function(item) { return item.id; }).join('$');
+        const adaptedItems = adaptItems();
+        const ids = adaptedItems.map(item => item.id).join('$');
 
         if (ids !== currentJoinedInternalIds) {
             currentJoinedInternalIds = ids;
@@ -213,7 +214,7 @@ function BimSelectController(
 
         if (event.which === Keys.Down) {
             event.preventDefault();
-            var newIndex = Math.min(
+            const newIndex = Math.min(
                 $ctrl.activeIndex + 1,
                 $ctrl.matches.length - 1
             );
@@ -234,7 +235,7 @@ function BimSelectController(
         if (event.which === Keys.Enter) {
             event.preventDefault();
             if ($ctrl.activeIndex >= 0) {
-                var item = $ctrl.matches[$ctrl.activeIndex];
+                const item = $ctrl.matches[$ctrl.activeIndex];
                 $ctrl.select(null, item);
             }
         }
@@ -268,12 +269,12 @@ function BimSelectController(
 
     function ensureVisibleItem() {
         $timeout(function() {
-            var li = ul.querySelector('li.active');
+            const li = ul.querySelector('li.active');
 
             if (li) {
-                var itemHeight = li.clientHeight;
-                var listHeight = ul.clientHeight;
-                var offsetTop = li.offsetTop;
+                const itemHeight = li.clientHeight;
+                const listHeight = ul.clientHeight;
+                const offsetTop = li.offsetTop;
 
                 // below viewport
                 if (offsetTop + itemHeight > ul.scrollTop + listHeight) {
@@ -302,9 +303,9 @@ function BimSelectController(
 
     function updateMatches() {
         $ctrl.activeIndex = -1;
-        var query = $ctrl.inputValue || '';
+        const query = $ctrl.inputValue || '';
         $ctrl.matches = $ctrl.internalItems.filter(function(item) {
-            var text = item.text.toLowerCase();
+            const text = item.text.toLowerCase();
             return text.indexOf(query.toLowerCase()) >= 0;
         });
         // Workaround to expose real index for each item since
@@ -327,9 +328,9 @@ function BimSelectController(
     }
 
     function adaptItems() {
-        var externalItems = $ctrl.items || [];
+        const externalItems = $ctrl.items || [];
         return externalItems.map(function(item) {
-            var adapted = $ctrl.adapter(item);
+            const adapted = $ctrl.adapter(item);
             if (typeof adapted.text !== 'string') {
                 throw new Error('Adapter did not generate an object with a valid text string property');
             }
@@ -358,7 +359,7 @@ function BimSelectController(
     }
 
     function outsideClick(event) {
-        var elm = event.target;
+        let elm = event.target;
         while (elm && elm !== $element[0]) {
             elm = elm.parentNode;
         }

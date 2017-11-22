@@ -183,7 +183,6 @@ BimSelectController.$inject = ['$document', '$element', '$timeout', '$scope', '$
 
 function BimSelectController($document, $element, $timeout, $scope, $attrs) {
     var $ctrl = this;
-    var currentJoinedInternalIds = null;
     var defaultItemTemplateUrl = itemTemplateUrl;
     var ul = $element[0].querySelector('ul');
 
@@ -193,6 +192,8 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs) {
         Down: 40,
         Enter: 13
     };
+
+    var currentJoinedInternalIds = null;
 
     $ctrl.internalItems = [];
     $ctrl.defaultPlaceholder = 'No selection';

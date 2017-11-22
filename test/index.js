@@ -8,6 +8,6 @@ require('angular-vs-repeat');
 
 require('./style-assertions.js');
 
-var testsContext = require.context(".", true, /\.spec$/);
+const testsContext = require.context(".", true, /\.spec$/);
 testsContext.keys().forEach(testsContext);
 
