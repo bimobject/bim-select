@@ -1,10 +1,12 @@
 'use strict';
 
-const DEBUG = process.argv.includes('--debug');
+// Set the path to the bundled chrome in puppeteer.
+process.env.CHROME_BIN = require('puppeteer').executablePath();
+
 const ALL = process.argv.includes('--all');
 
-const BROWSERS = ['Nightmare', 'Edge', 'IE', 'Firefox', 'Chrome'];
-const HEADLESS = ['Nightmare'];
+const BROWSERS = ['ChromeHeadless', 'Edge', 'IE', 'Firefox'];
+const HEADLESS = ['ChromeHeadless'];
 const CI = !!process.env.CI;
 
 let browsers = CI
@@ -34,14 +36,6 @@ module.exports = function(config) {
 
         browsers,
         singleRun: true,
-
-        nightmareOptions: {
-            show: DEBUG,
-            openDevTools: DEBUG,
-            width: 1000,
-            height: 600,
-            title: 'Unit test runner'
-        },
 
         webpack: webpackConfig
     });
