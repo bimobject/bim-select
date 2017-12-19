@@ -11,7 +11,7 @@ with the help of [virtual scrolling][vsr].
 
 This first version is just extracted from an internal project at [BIMobject][bim]
 and is in dire need to get some documentation and a better README file. For now,
-please consult the JSDoc block in the implementation file.
+please consult the [JSDoc block][doc] in the implementation file.
 
 There are currently too many runtime dependencies, the goal is to remove them
 or make them optional.
@@ -23,3 +23,4 @@ or make them optional.
   [vsr]: https://github.com/kamilkp/angular-vs-repeat "angular-vs-repeat"
   [bim]: https://bimobject.com
   [isc]: LICENSE
+  [doc]: https://github.com/bimobject/bim-select/blob/master/src/bim-select.component.js#L9
