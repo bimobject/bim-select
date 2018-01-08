@@ -78,6 +78,11 @@ describe('bimSelect', function() {
                 const active = angular.element(li.parentNode).scope().$ctrl.matches[index];
                 return active.model;
             };
+            this.texts = function() {
+                return this.lis().map(function(li) {
+                    return li.textContent.trim();
+                });
+            };
 
             this.pressUp = function() { return this.press(38); };
             this.pressDown = function() { return this.press(40); };
@@ -102,6 +107,14 @@ describe('bimSelect', function() {
             expect(function() {
                 createElement();
             }).to.not.throw();
+        });
+        it('filters case insensitive', function() {
+            scope.items = [
+                { id: 1, text: 'Glenn' }
+            ];
+            this.element = createElement();
+            this.filter('g');
+            expect(this.texts()).to.deep.equal(['Glenn']);
         });
         context('when clicking the arrow', function() {
             beforeEach(function() {
@@ -591,13 +604,6 @@ describe('bimSelect', function() {
             });
         });
         context('with an adapter', function() {
-            beforeEach(function() {
-                this.texts = function() {
-                    return this.lis().map(function(li) {
-                        return li.textContent.trim();
-                    });
-                };
-            });
             it('allows for any data structure', function() {
                 scope.items = [
                     { birthday: new Date(2017, 3, 1), name: 'April fool' },
@@ -791,6 +797,71 @@ describe('bimSelect', function() {
                 it('the toggler is enabled', function() {
                     expect(this.element.querySelector('.bim-select--toggle'))
                         .to.have.property('disabled', false);
+                });
+            });
+        });
+        describe('diacritics', function() {
+            beforeEach(function() {
+                scope.items = [
+                    { id: 1, text: 'Glenn' },
+                    { id: 2, text: 'Miliam' },
+                    { id: 3, text: 'Sigün' }
+                ];
+                var markup = '<bim-select class="bim-select-spec" \
+                                      ng-model="value" \
+                                      items="items" \
+                                      diacritics="diacritics" \
+                            ></bim-select>';
+                this.element = createElement(markup);
+            });
+            context('when not set', function() {
+                it('only finds exact matches', function() {
+                    this.filter('u');
+                    expect(this.texts()).to.deep.equal(['No matches']);
+
+                    this.filter('ü');
+                    expect(this.texts()).to.deep.equal(['Sigün']);
+                });
+            });
+            context('when "strip"', function() {
+                beforeEach(function() {
+                    scope.diacritics = 'strip';
+                    scope.$digest();
+                });
+                it('finds items with diacritics', function() {
+                    this.filter('u');
+                    expect(this.texts()).to.deep.equal(['Sigün']);
+                });
+                it('finds items without diacritics', function() {
+                    this.filter('ë');
+                    expect(this.texts()).to.deep.equal(['Glenn']);
+                });
+                context('when in an env not supporting unicode normalization', function() {
+                    beforeEach(function() {
+                        this.original = String.prototype.normalize;
+                        delete String.prototype.normalize;
+                    });
+                    afterEach(function() {
+                        // Restore native function
+                        String.prototype.normalize = this.original;
+                    });
+                    it('finds items using simple diacritics', function() {
+                        scope.items = 'üéèåäöæø'.split('').map(function(letter, index) {
+                            return { text: letter, id: index+1 };
+                        });
+
+                        this.filter('u');
+                        expect(this.texts()).to.deep.equal(['ü']);
+
+                        this.filter('o');
+                        expect(this.texts()).to.deep.equal(['ö', 'ø']);
+
+                        this.filter('e');
+                        expect(this.texts()).to.deep.equal(['é', 'è']);
+
+                        this.filter('a');
+                        expect(this.texts()).to.deep.equal(['å', 'ä']);
+                    });
                 });
             });
         });

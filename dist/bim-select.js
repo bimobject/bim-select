@@ -119,6 +119,9 @@ var itemTemplateUrl = __webpack_require__(5);
  *   in the list, set the url to the template here. `match` is available on
  *   the scope and is an object with `id`, `text` and `model` property, and
  *   the `model` property has the item in the `items` array as a value.
+ * @param {Expression<String>>} [diacritics]
+ *   If set to `'strip'` then all filtering in the dropdown will compare
+ *   items using the normalized values stripped of any diacritic marks.
  *
  * @example
  * Simple example
@@ -167,10 +170,11 @@ exports.name = 'bimSelect';
 
 exports.component = {
     bindings: {
-        items: '<',
-        onChange: '&',
         adapter: '<',
-        itemTemplateUrl: '<'
+        diacritics: '<',
+        itemTemplateUrl: '<',
+        items: '<',
+        onChange: '&'
     },
     require: {
         model: 'ngModel'
@@ -367,8 +371,8 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs) {
         $ctrl.activeIndex = -1;
         var query = $ctrl.inputValue || '';
         $ctrl.matches = $ctrl.internalItems.filter(function (item) {
-            var text = item.text.toLowerCase();
-            return text.indexOf(query.toLowerCase()) >= 0;
+            var text = normalize(item.text);
+            return text.indexOf(normalize(query)) >= 0;
         });
         // Workaround to expose real index for each item since
         // vs-repeat modifies it.
@@ -433,6 +437,34 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs) {
                 $ctrl.close();
             });
         }
+    }
+
+    var NORMALIZE_MAP = {
+        'å': 'a',
+        'ä': 'a',
+        'é': 'e',
+        'è': 'e',
+        'ö': 'o',
+        'ø': 'o',
+        'ü': 'u'
+    };
+
+    function normalize(str) {
+        var out = str.toLowerCase();
+
+        if ($ctrl.diacritics === 'strip') {
+            if (out.normalize) {
+                // Most browsers
+                out = out.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            } else {
+                // IE11
+                out = out.split('').map(function (char) {
+                    return NORMALIZE_MAP[char] || char;
+                }).join('');
+            }
+        }
+
+        return out;
     }
 };
 
