@@ -122,6 +122,18 @@ var itemTemplateUrl = __webpack_require__(5);
  * @param {Expression<String>>} [diacritics]
  *   If set to `'strip'` then all filtering in the dropdown will compare
  *   items using the normalized values stripped of any diacritic marks.
+ * @param {Expression<Function>>} [sorter]
+ *   It allows the consumer to have a custom order of the matching items.
+ *
+ *   An expression evaulating to a function reference. This function will
+ *   be used as a sorter simliar to the one used when sorting with
+ *   `Array.prototype.sort`. Parameters will be `match1`, `match2`, `query`
+ *   and the return value should equal that needed for the array sorter.
+ *
+ *   E.g. if the matches beginning with the search string should be
+ *   prioritized, a custom sorter handling this could be added.
+ *
+ *   Please note: This function is only affects a filtered list.
  *
  * @example
  * Simple example
@@ -155,6 +167,24 @@ var itemTemplateUrl = __webpack_require__(5);
  * ```
  *
  * @example
+ * When using an custom sorter
+ *
+ * ```js
+ * vm.items = [
+ *   { id: 1, name: 'Augustus' },
+ *   { id: 3, name: 'Caligula' }
+ * ];
+ * vm.sorter = function reverse(a, b, query) {
+ *     return -a.text.localeCompare(b.text);
+ * }
+ * ```
+ * ```html
+ * <bim-select items="vm.items"
+ *             ng-model="vm.selected"
+ *             sorter="vm.sorter">
+ * ```
+ *
+ * @example
 * Custom template where the text should be "encrypted".
 *
 * ```html
@@ -174,7 +204,8 @@ exports.component = {
         diacritics: '<',
         itemTemplateUrl: '<',
         items: '<',
-        onChange: '&'
+        onChange: '&',
+        sorter: '<?'
     },
     require: {
         model: 'ngModel'
@@ -374,6 +405,13 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs) {
             var text = normalize(item.text);
             return text.indexOf(normalize(query)) >= 0;
         });
+
+        if (query && $ctrl.sorter) {
+            $ctrl.matches.sort(function (a, b) {
+                return $ctrl.sorter(a.model, b.model, query);
+            });
+        }
+
         // Workaround to expose real index for each item since
         // vs-repeat modifies it.
         $ctrl.matches.forEach(function (match, index) {

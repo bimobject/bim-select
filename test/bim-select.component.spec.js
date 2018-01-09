@@ -884,6 +884,34 @@ describe('bimSelect', function() {
                 });
             });
         });
+        describe('custom sorter', function() {
+            beforeEach(function() {
+                scope.items = [
+                    { id: 1, text: 'aa' },
+                    { id: 2, text: 'ab' }
+                ];
+            });
+            it('allows custom sorting', function() {
+                scope.sorter = function(a, b) {
+                    return -a.text.localeCompare(b.text);
+                }
+                this.element = createElement();
+                this.filter('a');
+                expect(this.texts()).to.deep.equal(['ab', 'aa']);
+            });
+            it('does not sort the full list', function() {
+                scope.sorter = sinon.stub();
+                this.element = createElement();
+                // no invoke of this.filter here, so full list.
+                expect(scope.sorter).has.not.been.called;
+            });
+            it('allows usage of the query string', function() {
+                scope.sorter = sinon.stub();
+                this.element = createElement();
+                this.filter('a');
+                expect(scope.sorter).has.been.calledWith(sinon.match.any, sinon.match.any, 'a');
+            });
+        });
     });
 
     describe('controller', function() {
@@ -941,6 +969,7 @@ describe('bimSelect', function() {
                                         on-change="change(selected)" \
                                         item-template-url="itemTemplateUrl" \
                                         adapter="adapter" \
+                                        sorter="sorter" \
                             ></bim-select>';
         /* eslint-enable no-multi-str */
         const elm = $compile(markup)(scope);

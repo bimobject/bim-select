@@ -42,6 +42,15 @@
                     placeholder="Select a country…"
                     adapter="vm.countryAdapter"></bim-select>
         <p>Selected value: <span ng-bind="vm.placeholderValue | json"></span></p>
+
+
+        <h2>Custom sorter</h2>
+
+        <bim-select items="vm.countries"
+                    ng-model="vm.sortedValue"
+                    adapter="vm.countryAdapter"
+                    sorter="vm.reverseCountrySorter"></bim-select>
+        <p>Selected value: <span ng-bind="vm.sortedValue | json"></span></p>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -67,6 +76,15 @@
                     id: item.code
                 }
             }
+            this.reverseCountrySorter = function reverse(a, b, query) {
+                var result = a.name.localeCompare(b.name, {
+                    sensitivity: 'base'
+                });
+
+                // reverse order when searching list...
+                return query ? -result : result;
+            }
+
 
             // NAMES
             this.names = [
