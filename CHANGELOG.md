@@ -1,3 +1,14 @@
+<a name="2.2.0"></a>
+# [2.2.0](https://github.com/bimobject/bim-select/compare/v2.1.0...v2.2.0) (2018-01-10)
+
+
+### Features
+
+* **diacritics:** Allow filtering ignoring diacritics ([b798ffe](https://github.com/bimobject/bim-select/commit/b798ffe))
+* **sorter:** Allow custom sorting of matched items ([41eb1d9](https://github.com/bimobject/bim-select/commit/41eb1d9)), closes [#9](https://github.com/bimobject/bim-select/issues/9)
+
+
+
 <a name="2.1.0"></a>
 # [2.1.0](https://github.com/bimobject/bim-select/compare/v2.0.0...v2.1.0) (2017-09-26)
 
