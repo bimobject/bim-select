@@ -1,3 +1,13 @@
+<a name="2.3.0"></a>
+# [2.3.0](https://github.com/bimobject/bim-select/compare/v2.2.0...v2.3.0) (2018-01-12)
+
+
+### Features
+
+* **config:** Allow global configuration ([27246f4](https://github.com/bimobject/bim-select/commit/27246f4)), closes [#8](https://github.com/bimobject/bim-select/issues/8)
+
+
+
 <a name="2.2.0"></a>
 # [2.2.0](https://github.com/bimobject/bim-select/compare/v2.1.0...v2.2.0) (2018-01-10)
 
