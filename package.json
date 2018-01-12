@@ -1,6 +1,6 @@
 {
   "name": "bim-select",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "A dropdown/select solution for Angular.js that handles millions of items without lag.",
   "main": "dist/bim-select.js",
   "scripts": {
