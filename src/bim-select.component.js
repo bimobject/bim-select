@@ -6,6 +6,8 @@ require('./bim-select.less');
 const templateUrl = require('./bim-select.template.html');
 const itemTemplateUrl = require('./bim-select-item.template.html');
 
+exports.name = 'bimSelect';
+
 /**
  * A combo box/searchable dropdown list with support for millions of
  * items. It is using a virtual scroll to handle the amount of items.
@@ -121,13 +123,11 @@ const itemTemplateUrl = require('./bim-select-item.template.html');
 *             ng-model="vm.selected"
 *             item-template-url="'item.html'"></bim-select>
 */
-exports.name = 'bimSelect';
-
-exports.component = {
+exports.impl = {
     bindings: {
         adapter: '<',
-        diacritics: '<',
-        itemTemplateUrl: '<',
+        diacritics: '<?',
+        itemTemplateUrl: '<?',
         items: '<',
         onChange: '&',
         sorter: '<?'
@@ -144,7 +144,8 @@ BimSelectController.$inject = [
     '$element',
     '$timeout',
     '$scope',
-    '$attrs'
+    '$attrs',
+    'bimSelectConfig'
 ];
 
 function BimSelectController(
@@ -152,7 +153,8 @@ function BimSelectController(
     $element,
     $timeout,
     $scope,
-    $attrs
+    $attrs,
+    bimSelectConfig
 ) {
     const $ctrl = this;
     const defaultItemTemplateUrl = itemTemplateUrl;
@@ -177,7 +179,9 @@ function BimSelectController(
     // ANGULAR METHODS
 
     $ctrl.$onInit = function() {
-        $ctrl.internalItemTemplateUrl = $ctrl.itemTemplateUrl || defaultItemTemplateUrl;
+        $ctrl.internalItemTemplateUrl = $ctrl.itemTemplateUrl ||
+            bimSelectConfig.itemTemplateUrl ||
+            defaultItemTemplateUrl;
         renderSelection();
         $ctrl.model.$render = renderSelection;
         $ctrl.adapter = $ctrl.adapter || function(item) {
@@ -298,7 +302,7 @@ function BimSelectController(
             !$ctrl.isRequired();
     };
 
-    $ctrl.placeholderText = () => $attrs.placeholder || $ctrl.defaultPlaceholder;
+    $ctrl.placeholderText = () => $attrs.placeholder || bimSelectConfig.placeholder || $ctrl.defaultPlaceholder;
 
     // INTERNAL HELPERS
 
@@ -344,9 +348,10 @@ function BimSelectController(
             return text.indexOf(normalize(query)) >= 0;
         });
 
-        if (query && $ctrl.sorter) {
+        const sorter = 'sorter' in $ctrl ? $ctrl.sorter : bimSelectConfig.sorter;
+        if (query && sorter) {
             $ctrl.matches.sort(function(a, b) {
-                return $ctrl.sorter(a.model, b.model, query);
+                return sorter(a.model, b.model, query);
             });
         }
 
@@ -426,9 +431,10 @@ function BimSelectController(
     };
 
     function normalize(str) {
-        var out = str.toLowerCase();
+        const localPresent = 'diacritics' in $ctrl;
+        let out = str.toLowerCase();
 
-        if ($ctrl.diacritics === 'strip') {
+        if (localPresent && $ctrl.diacritics === 'strip' || !localPresent && bimSelectConfig.diacritics === 'strip') {
             if (out.normalize) {
                 // Most browsers
                 out = out.normalize('NFD').replace(/[\u0300-\u036f]/g, '');

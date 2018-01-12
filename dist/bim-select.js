@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -73,13 +73,123 @@
 "use strict";
 
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+exports.name = 'bimSelectConfig';
+
+var config = {
+    diacritics: null,
+    itemTemplateUrl: null,
+    placeholder: null,
+    sorter: null
+};
+
+/**
+ * @ngdoc provider
+ * @name bimSelectConfigProvider
+ * @description
+ * Use bimSelectConfigProvider to be able to reuse a set of configuration
+ * options for all instances of `bimSelect` in an application.
+ *
+ * @example
+ * const randomSorter = () => 2 * Math.random() - 1;
+ *
+ * angular.module('app').config(function(bimSelectConfigProvider) {
+ *     bimSelectConfigProvider.set('sorter', randomSorter);
+ * });
+ */
+exports.impl = function () {
+    function bimSelectConfigProvider() {
+        _classCallCheck(this, bimSelectConfigProvider);
+    }
+
+    _createClass(bimSelectConfigProvider, [{
+        key: 'set',
+
+        /**
+         * @ngdoc method
+         * @name bimSelectConfigProvider.set
+         * @description
+         * Set global default values for these options:
+         *
+         * - `placeholder`: Must be a string.
+         * - `sorter`: Must be a function.
+         * - `itemTemplateUrl`: Must be a string.
+         * - `diacritics`: Must be a string.
+         *
+         * For details on the values, see the documentation for `bimSelect`.
+         * @param {String} option
+         *   The name of the option to set.
+         * @param {Any} value
+         *   The value for the option.
+         */
+        value: function set(option, value) {
+            if (!Object.keys(config).includes(option)) {
+                throw new Error('Invalid configuration name: ' + option);
+            }
+
+            switch (option) {
+                case 'sorter':
+                    if (value === null || typeof value === 'function') {
+                        config[option] = value;
+                    } else {
+                        throw new Error('The sorter value must be a function');
+                    }
+                    break;
+
+                case 'placeholder':
+                    if (value === null || typeof value === 'string') {
+                        config[option] = value;
+                    } else {
+                        throw new Error('The placeholder value must be a string');
+                    }
+                    break;
+
+                case 'diacritics':
+                    if (value === null || typeof value === 'string') {
+                        config[option] = value;
+                    } else {
+                        throw new Error('The diacritics value must be a string');
+                    }
+                    break;
+
+                case 'itemTemplateUrl':
+                    if (value === null || typeof value === 'string') {
+                        config[option] = value;
+                    } else {
+                        throw new Error('The itemTemplateUrl value must be a string');
+                    }
+                    break;
+            }
+        }
+    }, {
+        key: '$get',
+        value: function $get() {
+            return Object.freeze(Object.assign({}, config));
+        }
+    }]);
+
+    return bimSelectConfigProvider;
+}();
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 // .outerWidth requires jQuery.
-__webpack_require__(10);
+__webpack_require__(11);
 
-__webpack_require__(7);
+__webpack_require__(8);
 
-var templateUrl = __webpack_require__(6);
-var itemTemplateUrl = __webpack_require__(5);
+var templateUrl = __webpack_require__(7);
+var itemTemplateUrl = __webpack_require__(6);
+
+exports.name = 'bimSelect';
 
 /**
  * A combo box/searchable dropdown list with support for millions of
@@ -196,13 +306,11 @@ var itemTemplateUrl = __webpack_require__(5);
 *             ng-model="vm.selected"
 *             item-template-url="'item.html'"></bim-select>
 */
-exports.name = 'bimSelect';
-
-exports.component = {
+exports.impl = {
     bindings: {
         adapter: '<',
-        diacritics: '<',
-        itemTemplateUrl: '<',
+        diacritics: '<?',
+        itemTemplateUrl: '<?',
         items: '<',
         onChange: '&',
         sorter: '<?'
@@ -214,9 +322,9 @@ exports.component = {
     controller: BimSelectController
 };
 
-BimSelectController.$inject = ['$document', '$element', '$timeout', '$scope', '$attrs'];
+BimSelectController.$inject = ['$document', '$element', '$timeout', '$scope', '$attrs', 'bimSelectConfig'];
 
-function BimSelectController($document, $element, $timeout, $scope, $attrs) {
+function BimSelectController($document, $element, $timeout, $scope, $attrs, bimSelectConfig) {
     var $ctrl = this;
     var defaultItemTemplateUrl = itemTemplateUrl;
     var ul = $element[0].querySelector('ul');
@@ -240,7 +348,7 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs) {
     // ANGULAR METHODS
 
     $ctrl.$onInit = function () {
-        $ctrl.internalItemTemplateUrl = $ctrl.itemTemplateUrl || defaultItemTemplateUrl;
+        $ctrl.internalItemTemplateUrl = $ctrl.itemTemplateUrl || bimSelectConfig.itemTemplateUrl || defaultItemTemplateUrl;
         renderSelection();
         $ctrl.model.$render = renderSelection;
         $ctrl.adapter = $ctrl.adapter || function (item) {
@@ -359,7 +467,7 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs) {
     };
 
     $ctrl.placeholderText = function () {
-        return $attrs.placeholder || $ctrl.defaultPlaceholder;
+        return $attrs.placeholder || bimSelectConfig.placeholder || $ctrl.defaultPlaceholder;
     };
 
     // INTERNAL HELPERS
@@ -406,9 +514,10 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs) {
             return text.indexOf(normalize(query)) >= 0;
         });
 
-        if (query && $ctrl.sorter) {
+        var sorter = 'sorter' in $ctrl ? $ctrl.sorter : bimSelectConfig.sorter;
+        if (query && sorter) {
             $ctrl.matches.sort(function (a, b) {
-                return $ctrl.sorter(a.model, b.model, query);
+                return sorter(a.model, b.model, query);
             });
         }
 
@@ -488,9 +597,10 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs) {
     };
 
     function normalize(str) {
+        var localPresent = 'diacritics' in $ctrl;
         var out = str.toLowerCase();
 
-        if ($ctrl.diacritics === 'strip') {
+        if (localPresent && $ctrl.diacritics === 'strip' || !localPresent && bimSelectConfig.diacritics === 'strip') {
             if (out.normalize) {
                 // Most browsers
                 out = out.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -507,31 +617,30 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs) {
 };
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports) {
 
 module.exports = angular;
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var angular = __webpack_require__(1);
+var angular = __webpack_require__(2);
 
-var _require = __webpack_require__(0),
-    name = _require.name,
-    component = _require.component;
+var component = __webpack_require__(1);
+var provider = __webpack_require__(0);
 
-module.exports = angular.module('bim.select', ['vs-repeat']).component(name, component).name;
+module.exports = angular.module('bim.select', ['vs-repeat']).component(component.name, component.impl).provider(provider.name, provider.impl).name;
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(4)(true);
+exports = module.exports = __webpack_require__(5)(true);
 // imports
 
 
@@ -542,7 +651,7 @@ exports.push([module.i, "bim-select {\n  display: block;\n}\nbim-select .bim-sel
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
 /*
@@ -624,7 +733,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports) {
 
 var path = './bim.select/bim-select-item.template.html';
@@ -633,7 +742,7 @@ window.angular.module('ng').run(['$templateCache', function(c) { c.put(path, htm
 module.exports = path;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports) {
 
 var path = './bim.select/bim-select.template.html';
@@ -642,13 +751,13 @@ window.angular.module('ng').run(['$templateCache', function(c) { c.put(path, htm
 module.exports = path;
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(3);
+var content = __webpack_require__(4);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -656,7 +765,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(8)(content, options);
+var update = __webpack_require__(9)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -673,7 +782,7 @@ if(false) {
 }
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -719,7 +828,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(9);
+var	fixUrls = __webpack_require__(10);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -1032,7 +1141,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports) {
 
 
@@ -1127,7 +1236,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = jQuery;

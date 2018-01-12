@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <title>Example of bim-select using the provider configuration</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v3.3.7/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/FortAwesome/Font-Awesome/945e8bbd/css/font-awesome.css">
+</head>
+<body ng-controller="ExampleController as vm">
+    <div class="container">
+        <h1>Examples</h1>
+        <h2>Using configured default placeholder</h2>
+
+        <bim-select items="vm.countries"
+                    adapter="vm.countryAdapter"
+                    ng-model="vm.countryValue"></bim-select>
+
+        <h2>Locally overridden placeholder</h2>
+
+        <bim-select items="vm.countries"
+                    ng-model="vm.placeholderValue"
+                    placeholder="Select a country…"
+                    adapter="vm.countryAdapter"></bim-select>
+        <p>Selected value: <span ng-bind="vm.placeholderValue | json"></span></p>
+
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="https://cdn.rawgit.com/kamilkp/angular-vs-repeat/v1.1.7/src/angular-vs-repeat.min.js"></script>
+
+    <script src="../dist/bim-select.js"></script>
+    <script>
+    angular
+        .module('app', ['bim.select'])
+        .config(function(bimSelectConfigProvider) {
+            bimSelectConfigProvider.set('placeholder', 'Select something nice…');
+            bimSelectConfigProvider.set('sorter', function() { return 2 * Math.random() - 1; });
+        })
+        .controller('ExampleController', function() {
+            // COUNTRIES
+            this.countries = [
+                { name: 'Denmark', code: 'dk' },
+                { name: 'Sweden', code: 'sv' },
+                { name: 'Finland', code: 'fi' },
+                { name: 'Norway', code: 'no' },
+            ]
+            this.countryAdapter = function(item) {
+                return {
+                    text: item.name,
+                    id: item.code
+                }
+            }
+        })
+    </script>
+</body>
+</html>

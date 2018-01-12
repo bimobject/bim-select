@@ -12,9 +12,13 @@ describe('bimSelect', function() {
     let container;
     let styles;
     let scope;
+    let config;
 
     beforeEach(function() {
-        angular.mock.module('bim.select');
+        config = {};
+        angular.mock.module('bim.select', {
+            bimSelectConfig: config
+        });
         angular.mock.inject(function($injector) {
             $rootScope = $injector.get('$rootScope');
             $compile = $injector.get('$compile');
@@ -671,17 +675,29 @@ describe('bimSelect', function() {
             });
         });
         context('with a custom item template', function() {
-            it('uses it', function() {
+            beforeEach(function() {
                 scope.items = [
                     { id: 4, text: 'Glenn' },
                     { id: 5, text: 'Miliam' }
                 ];
+            });
+            it('uses it', function() {
                 scope.itemTemplateUrl = 'item.html';
                 $templateCache.put('item.html', '<custom>{{ match.text }}</custom>');
 
                 const element = createElement();
 
                 expect(element.querySelectorAll('li custom')).to.have.length(2);
+            });
+            context('when set in defaults', function() {
+                beforeEach(function() {
+                    $templateCache.put('default.html', '<strong>{{ match.text }}</strong>');
+                    config.itemTemplateUrl = 'default.html';
+                });
+                it('is used', function() {
+                    const element = createElement();
+                    expect(element.querySelector('li strong')).to.exist;
+                });
             });
         });
         context('when required is not set', function() {
@@ -807,14 +823,16 @@ describe('bimSelect', function() {
                     { id: 2, text: 'Miliam' },
                     { id: 3, text: 'Sigün' }
                 ];
-                var markup = '<bim-select class="bim-select-spec" \
+                this.markup = '<bim-select class="bim-select-spec" \
                                       ng-model="value" \
                                       items="items" \
                                       diacritics="diacritics" \
                             ></bim-select>';
-                this.element = createElement(markup);
             });
-            context('when not set', function() {
+            context('when not specified', function() {
+                beforeEach(function() {
+                    this.element = createElement(this.markup);
+                });
                 it('only finds exact matches', function() {
                     this.filter('u');
                     expect(this.texts()).to.deep.equal(['No matches']);
@@ -823,10 +841,30 @@ describe('bimSelect', function() {
                     expect(this.texts()).to.deep.equal(['Sigün']);
                 });
             });
+            context('when set in defaults', function() {
+                beforeEach(function() {
+                    config.diacritics = 'strip';
+                });
+                it('finds items with diacritics', function() {
+                    const markup = '<bim-select class="bim-select-spec" \
+                                      ng-model="value" \
+                                      items="items" \
+                            ></bim-select>';
+                    this.element = createElement(markup);
+                    this.filter('u');
+                    expect(this.texts()).to.deep.equal(['Sigün']);
+                });
+                it('allows local override', function() {
+                    scope.diacritics = null;
+                    this.element = createElement(this.markup);
+                    this.filter('u');
+                    expect(this.texts()).to.deep.equal(['No matches']);
+                });
+            });
             context('when "strip"', function() {
                 beforeEach(function() {
                     scope.diacritics = 'strip';
-                    scope.$digest();
+                    this.element = createElement(this.markup);
                 });
                 it('finds items with diacritics', function() {
                     this.filter('u');
@@ -872,7 +910,7 @@ describe('bimSelect', function() {
                     expect(element.querySelector('input')).to.have.property('placeholder', 'No selection');
                 });
             });
-            context('when specified', function() {
+            context('when specified locally', function() {
                 it('is used', function() {
                     const element = createElement('\
                         <bim-select class="bim-select-spec" \
@@ -881,6 +919,28 @@ describe('bimSelect', function() {
                             items="items" \
                         ></bim-select>');
                     expect(element.querySelector('input')).to.have.property('placeholder', 'My string');
+                });
+            });
+            context('when set in defaults', function() {
+                beforeEach(function() {
+                    config.placeholder = 'Default';
+                });
+                it('is used', function() {
+                    const element = createElement(`
+                        <bim-select class="bim-select-spec"
+                            ng-model="value"
+                            items="items"
+                        ></bim-select>`);
+                    expect(element.querySelector('input')).to.have.property('placeholder', 'Default');
+                });
+                it('allows local override', function() {
+                    const element = createElement(`
+                        <bim-select class="bim-select-spec"
+                            ng-model="value"
+                            placeholder="Local"
+                            items="items"
+                        ></bim-select>`);
+                    expect(element.querySelector('input')).to.have.property('placeholder', 'Local');
                 });
             });
         });
@@ -910,6 +970,32 @@ describe('bimSelect', function() {
                 this.element = createElement();
                 this.filter('a');
                 expect(scope.sorter).has.been.calledWith(sinon.match.any, sinon.match.any, 'a');
+            });
+            context('when set in defaults', function() {
+                beforeEach(function() {
+                    scope.items = [
+                        { id: 1, text: 'ba' },
+                        { id: 2, text: 'ab' }
+                    ];
+                    // Sort from first letter
+                    config.sorter = (a, b) => a.text.localeCompare(b.text);
+                });
+                it('is used', function() {
+                    this.element = createElement(`
+                        <bim-select class="bim-select-spec"
+                                    ng-model="value"
+                                    items="items"
+                                ></bim-select>`);
+                    this.filter('a');
+                    expect(this.texts()).to.deep.equal(['ab', 'ba']);
+                });
+                it('allows local override', function() {
+                    // Sort from 2nd letter
+                    scope.sorter = (a, b) => a.text.substr(1).localeCompare(b.text.substr(1));
+                    this.element = createElement();
+                    this.filter('a');
+                    expect(this.texts()).to.deep.equal(['ba', 'ab']);
+                });
             });
         });
     });

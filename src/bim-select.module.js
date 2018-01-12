@@ -1,8 +1,10 @@
 const angular = require('angular');
 
-const { name, component } = require('./bim-select.component.js');
+const component = require('./bim-select.component.js');
+const provider = require('./bim-select-config.provider.js');
 
 module.exports = angular
     .module('bim.select', ['vs-repeat'])
-    .component(name, component)
+    .component(component.name, component.impl)
+    .provider(provider.name, provider.impl)
     .name;
