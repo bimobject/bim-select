@@ -24,7 +24,7 @@
     "virtual",
     "scroll"
   ],
-  "author": "Glenn Jorde <glenn@tregusti.com> (https://github.com/tregusti)",
+  "author": "Glenn Jorde <glenn.jorde@bimobject.com> (https://github.com/bimobject)",
   "license": "ISC",
   "devDependencies": {
     "angular-mocks": "^1.6.4",
