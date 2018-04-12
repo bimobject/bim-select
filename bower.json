@@ -25,6 +25,6 @@
     "scroll"
   ],
   "license": "ISC",
-  "main": "dist/bim-select.js",
+  "main": "dist/bim-select.min.js",
   "name": "bim-select"
 }

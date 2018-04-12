@@ -1,3 +1,13 @@
+<a name="2.3.1"></a>
+## [2.3.1](https://github.com/bimobject/bim-select/compare/v2.3.0...v2.3.1) (2018-04-12)
+
+
+### Bug Fixes
+
+* **build:** Correctly polyfill for IE ([3020bf3](https://github.com/bimobject/bim-select/commit/3020bf3))
+
+
+
 <a name="2.3.0"></a>
 # [2.3.0](https://github.com/bimobject/bim-select/compare/v2.2.0...v2.3.0) (2018-01-12)
 
