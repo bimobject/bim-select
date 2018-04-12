@@ -33,9 +33,6 @@
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
 /******/
-/******/ 	// identity function for calling harmony imports with the correct context
-/******/ 	__webpack_require__.i = function(value) { return value; };
-/******/
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
@@ -45,6 +42,11 @@
 /******/ 				get: getter
 /******/ 			});
 /******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -62,585 +64,1216 @@
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/
+/******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/bim-select.module.js");
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-exports.name = 'bimSelectConfig';
-
-var config = {
-    diacritics: null,
-    itemTemplateUrl: null,
-    placeholder: null,
-    sorter: null
-};
-
-/**
- * @ngdoc provider
- * @name bimSelectConfigProvider
- * @description
- * Use bimSelectConfigProvider to be able to reuse a set of configuration
- * options for all instances of `bimSelect` in an application.
- *
- * @example
- * const randomSorter = () => 2 * Math.random() - 1;
- *
- * angular.module('app').config(function(bimSelectConfigProvider) {
- *     bimSelectConfigProvider.set('sorter', randomSorter);
- * });
- */
-exports.impl = function () {
-    function bimSelectConfigProvider() {
-        _classCallCheck(this, bimSelectConfigProvider);
-    }
-
-    _createClass(bimSelectConfigProvider, [{
-        key: 'set',
-
-        /**
-         * @ngdoc method
-         * @name bimSelectConfigProvider.set
-         * @description
-         * Set global default values for these options:
-         *
-         * - `placeholder`: Must be a string.
-         * - `sorter`: Must be a function.
-         * - `itemTemplateUrl`: Must be a string.
-         * - `diacritics`: Must be a string.
-         *
-         * For details on the values, see the documentation for `bimSelect`.
-         * @param {String} option
-         *   The name of the option to set.
-         * @param {Any} value
-         *   The value for the option.
-         */
-        value: function set(option, value) {
-            if (!Object.keys(config).includes(option)) {
-                throw new Error('Invalid configuration name: ' + option);
-            }
-
-            switch (option) {
-                case 'sorter':
-                    if (value === null || typeof value === 'function') {
-                        config[option] = value;
-                    } else {
-                        throw new Error('The sorter value must be a function');
-                    }
-                    break;
-
-                case 'placeholder':
-                    if (value === null || typeof value === 'string') {
-                        config[option] = value;
-                    } else {
-                        throw new Error('The placeholder value must be a string');
-                    }
-                    break;
-
-                case 'diacritics':
-                    if (value === null || typeof value === 'string') {
-                        config[option] = value;
-                    } else {
-                        throw new Error('The diacritics value must be a string');
-                    }
-                    break;
-
-                case 'itemTemplateUrl':
-                    if (value === null || typeof value === 'string') {
-                        config[option] = value;
-                    } else {
-                        throw new Error('The itemTemplateUrl value must be a string');
-                    }
-                    break;
-            }
-        }
-    }, {
-        key: '$get',
-        value: function $get() {
-            return Object.freeze(Object.assign({}, config));
-        }
-    }]);
-
-    return bimSelectConfigProvider;
-}();
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-// .outerWidth requires jQuery.
-__webpack_require__(11);
-
-__webpack_require__(8);
-
-var templateUrl = __webpack_require__(7);
-var itemTemplateUrl = __webpack_require__(6);
-
-exports.name = 'bimSelect';
-
-/**
- * A combo box/searchable dropdown list with support for millions of
- * items. It is using a virtual scroll to handle the amount of items.
- * It works just as fine with a smaller amount of items.
- *
- * Supports [`ngRequired`][ngRequired] and [`ngDisabled`][ngDisabled].
- * Both defaults to false.
- *
- *   [ngRequired]: https://docs.angularjs.org/api/ng/directive/ngRequired
- *   [ngDisabled]: https://docs.angularjs.org/api/ng/directive/ngDisabled
- *
- * @param {Expression<Array<?>>} items
- *   An angular expression that evaluates to an array of items in it that
- *   should be available to select from in the list by the user.
- *
- *   Each item should have a `name` property that will be used as the
- *   text representing the item in the dropdown.
- * @param {Expression} ngModel
- *   Should evaluate to a property that will contain the currently
- *   selected item in the `items` array.
- * @param {Expression<Function>>} [onChange]
- *   A function that will be notified when the user selects a new item
- *   in the list. Use `selected` in the expression to get hold of the
- *   selected item. The value of `selected` will be the value in the
- *   `items` array that was selected by the user.
- * @param {Expression<Function>>} [adapter]
- *   If each object in `items` does not have a `text` and `id` property
- *   you can use an adapter to transform each item into an object bimSelect
- *   can work with.
- *
- *   This function is invoked once for each item in the `items` list and must
- *   return an object with a `text` (string) and an `id` (string, numeric)
- *   property.
- * @param {Expression<String>>} [itemTemplateUrl]
- *   If you need to specify your own template to be rendered for each match
- *   in the list, set the url to the template here. `match` is available on
- *   the scope and is an object with `id`, `text` and `model` property, and
- *   the `model` property has the item in the `items` array as a value.
- * @param {Expression<String>>} [diacritics]
- *   If set to `'strip'` then all filtering in the dropdown will compare
- *   items using the normalized values stripped of any diacritic marks.
- * @param {Expression<Function>>} [sorter]
- *   It allows the consumer to have a custom order of the matching items.
- *
- *   An expression evaulating to a function reference. This function will
- *   be used as a sorter simliar to the one used when sorting with
- *   `Array.prototype.sort`. Parameters will be `match1`, `match2`, `query`
- *   and the return value should equal that needed for the array sorter.
- *
- *   E.g. if the matches beginning with the search string should be
- *   prioritized, a custom sorter handling this could be added.
- *
- *   Please note: This function is only affects a filtered list.
- *
- * @example
- * Simple example
- *
- * ```html
- * <bim-select items="vm.items"
- *             ng-model="vm.selected"
- *             on-change="vm.update({ item: selected })">
- * ```
- *
- * @example
- * When using an adapter
- *
- * ```js
- * vm.items = [
- *   { age: 19, name: 'Nineteen' },
- *   { age: 20, name: 'Twenty' }
- * ];
- * vm.adapter = function(item) {
- *   // Convert to a text/id object
- *   return {
- *     id: item.age,
- *     text: item.name
- *   };
- * }
- * ```
- * ```html
- * <bim-select items="vm.items"
- *             ng-model="vm.selected"
- *             adapter="vm.adapter">
- * ```
- *
- * @example
- * When using an custom sorter
- *
- * ```js
- * vm.items = [
- *   { id: 1, name: 'Augustus' },
- *   { id: 3, name: 'Caligula' }
- * ];
- * vm.sorter = function reverse(a, b, query) {
- *     return -a.text.localeCompare(b.text);
- * }
- * ```
- * ```html
- * <bim-select items="vm.items"
- *             ng-model="vm.selected"
- *             sorter="vm.sorter">
- * ```
- *
- * @example
-* Custom template where the text should be "encrypted".
-*
-* ```html
-* <script type="text/ng-template" id="item.html">
-*   <span class="bim-select-item">{{ match.text | rot13 }}</span>
-* </script>
-*
-* <bim-select items="vm.items"
-*             ng-model="vm.selected"
-*             item-template-url="'item.html'"></bim-select>
-*/
-exports.impl = {
-    bindings: {
-        adapter: '<',
-        diacritics: '<?',
-        itemTemplateUrl: '<?',
-        items: '<',
-        onChange: '&',
-        sorter: '<?'
-    },
-    require: {
-        model: 'ngModel'
-    },
-    templateUrl: templateUrl,
-    controller: BimSelectController
-};
-
-BimSelectController.$inject = ['$document', '$element', '$timeout', '$scope', '$attrs', 'bimSelectConfig'];
-
-function BimSelectController($document, $element, $timeout, $scope, $attrs, bimSelectConfig) {
-    var $ctrl = this;
-    var defaultItemTemplateUrl = itemTemplateUrl;
-    var ul = $element[0].querySelector('ul');
-
-    var Keys = {
-        Escape: 27,
-        Up: 38,
-        Down: 40,
-        Enter: 13
-    };
-
-    var currentJoinedInternalIds = null;
-
-    $ctrl.internalItems = [];
-    $ctrl.defaultPlaceholder = 'No selection';
-
-    $scope.$on('$destroy', function () {
-        $document.off('mousedown touchstart pointerdown', outsideClick);
-    });
-
-    // ANGULAR METHODS
-
-    $ctrl.$onInit = function () {
-        $ctrl.internalItemTemplateUrl = $ctrl.itemTemplateUrl || bimSelectConfig.itemTemplateUrl || defaultItemTemplateUrl;
-        renderSelection();
-        $ctrl.model.$render = renderSelection;
-        $ctrl.adapter = $ctrl.adapter || function (item) {
-            return {
-                text: item.text,
-                id: item.id
-            };
-        };
-        setWidth();
-    };
-
-    $ctrl.$doCheck = function () {
-        var adaptedItems = adaptItems();
-        var ids = adaptedItems.map(function (item) {
-            return item.id;
-        }).join('$');
-
-        if (ids !== currentJoinedInternalIds) {
-            currentJoinedInternalIds = ids;
-            $ctrl.internalItems = adaptedItems;
-            updateMatches();
-            return;
-        }
-    };
-
-    // TEMPLATE METHODS
-
-    $ctrl.activateHandler = function (event) {
-        event && event.stopPropagation();
-        $ctrl.inputValue = '';
-
-        open();
-    };
-
-    $ctrl.toggleHandler = function () {
-        if ($ctrl.active) {
-            $ctrl.close();
-        } else {
-            // For some reason the .focus below does not trigger activateHandler
-            // when running in a normal browser window, so invoke it manually.
-            $ctrl.activateHandler();
-            $element.find('input').focus();
-        }
-    };
-
-    $ctrl.close = function () {
-        $document.off('mousedown touchstart pointerdown', outsideClick);
-        $ctrl.active = false;
-        renderSelection();
-    };
-
-    $ctrl.select = function (event, match) {
-        event && event.preventDefault();
-        if (match.id !== 'bim-select-message') {
-            setSelection(match);
-            $ctrl.onChange({ selected: match.model });
-            $ctrl.close();
-        }
-    };
-
-    $ctrl.clear = function () {
-        $ctrl.model.$setViewValue(null);
-        $ctrl.onChange({ selected: null });
-        $ctrl.close();
-    };
-
-    $ctrl.keydownHandler = function (event) {
-        if (event.which === Keys.Escape) {
-            $ctrl.close();
-        }
-
-        if (event.which === Keys.Down) {
-            event.preventDefault();
-            var newIndex = Math.min($ctrl.activeIndex + 1, $ctrl.matches.length - 1);
-            if ($ctrl.matches[newIndex].id !== 'bim-select-message') {
-                $ctrl.activeIndex = newIndex;
-                ensureVisibleItem();
-            }
-        }
-
-        if (event.which === Keys.Up) {
-            event.preventDefault();
-            if ($ctrl.activeIndex > -1) {
-                $ctrl.activeIndex = Math.max($ctrl.activeIndex - 1, 0);
-                ensureVisibleItem();
-            }
-        }
-
-        if (event.which === Keys.Enter) {
-            event.preventDefault();
-            if ($ctrl.activeIndex >= 0) {
-                var item = $ctrl.matches[$ctrl.activeIndex];
-                $ctrl.select(null, item);
-            }
-        }
-    };
-
-    $ctrl.inputValueChangeHandler = function () {
-        updateMatches();
-        ul.scrollTop = 0;
-        if (!$ctrl.active) {
-            open();
-        }
-    };
-
-    $ctrl.isRequired = function () {
-        return !!$attrs.required;
-    };
-
-    $ctrl.isDisabled = function () {
-        return !!$attrs.disabled;
-    };
-
-    $ctrl.isClearable = function () {
-        return $ctrl.model.$modelValue !== undefined && $ctrl.model.$modelValue !== null && !$ctrl.isRequired();
-    };
-
-    $ctrl.placeholderText = function () {
-        return $attrs.placeholder || bimSelectConfig.placeholder || $ctrl.defaultPlaceholder;
-    };
-
-    // INTERNAL HELPERS
-
-    function ensureVisibleItem() {
-        $timeout(function () {
-            var li = ul.querySelector('li.active');
-
-            if (li) {
-                var itemHeight = li.clientHeight;
-                var listHeight = ul.clientHeight;
-                var offsetTop = li.offsetTop;
-
-                // below viewport
-                if (offsetTop + itemHeight > ul.scrollTop + listHeight) {
-                    ul.scrollTop = offsetTop - listHeight + 2 * itemHeight;
-                }
-                // above viewport
-                if (offsetTop - 5 < ul.scrollTop) {
-                    ul.scrollTop = offsetTop - itemHeight;
-                }
-            }
-        });
-    }
-
-    function open() {
-        if (!$ctrl.active) {
-            $ctrl.active = true;
-            $document.on('mousedown touchstart pointerdown', outsideClick);
-            updateMatches();
-            setWidth();
-            $timeout(function () {
-                // Force rerender of virtual scroll. Needed for at least IE11.
-                $scope.$broadcast('vsRepeatResize');
-            });
-        }
-    };
-
-    function updateMatches() {
-        $ctrl.activeIndex = -1;
-        var query = $ctrl.inputValue || '';
-        $ctrl.matches = $ctrl.internalItems.filter(function (item) {
-            var text = normalize(item.text);
-            return text.indexOf(normalize(query)) >= 0;
-        });
-
-        var sorter = 'sorter' in $ctrl ? $ctrl.sorter : bimSelectConfig.sorter;
-        if (query && sorter) {
-            $ctrl.matches.sort(function (a, b) {
-                return sorter(a.model, b.model, query);
-            });
-        }
-
-        // Workaround to expose real index for each item since
-        // vs-repeat modifies it.
-        $ctrl.matches.forEach(function (match, index) {
-            match.index = index;
-        });
-
-        if ($ctrl.inputValue && $ctrl.matches.length === 0) {
-            $ctrl.matches.push({
-                id: 'bim-select-message',
-                text: 'No matches'
-            });
-        } else if ($ctrl.internalItems.length === 0) {
-            $ctrl.matches.push({
-                id: 'bim-select-message',
-                text: 'No options'
-            });
-        }
-    }
-
-    function adaptItems() {
-        var externalItems = $ctrl.items || [];
-        return externalItems.map(function (item) {
-            var adapted = $ctrl.adapter(item);
-            if (typeof adapted.text !== 'string') {
-                throw new Error('Adapter did not generate an object with a valid text string property');
-            }
-            if (typeof adapted.id !== 'string' && typeof adapted.id !== 'number') {
-                throw new Error('Adapter did not generate an object with a valid id string or numeric property');
-            }
-            adapted.model = item;
-            return adapted;
-        });
-    }
-
-    function setWidth() {
-        $ctrl.width = $element.find('.input-group').outerWidth();
-    }
-
-    function setSelection(match) {
-        $ctrl.model.$setViewValue(match.model);
-    }
-
-    function renderSelection() {
-        if ($ctrl.model.$modelValue === undefined || $ctrl.model.$modelValue === null) {
-            $ctrl.inputValue = '';
-        } else {
-            $ctrl.inputValue = $ctrl.model.$modelValue && $ctrl.adapter($ctrl.model.$modelValue).text;
-        }
-    }
-
-    function outsideClick(event) {
-        var elm = event.target;
-        while (elm && elm !== $element[0]) {
-            elm = elm.parentNode;
-        }
-
-        if (!elm) {
-            // We hit document, and not any element within the directive
-            $scope.$apply(function () {
-                ul.scrollTop = 0;
-                $ctrl.close();
-            });
-        }
-    }
-
-    var NORMALIZE_MAP = {
-        'å': 'a',
-        'ä': 'a',
-        'é': 'e',
-        'è': 'e',
-        'ö': 'o',
-        'ø': 'o',
-        'ü': 'u'
-    };
-
-    function normalize(str) {
-        var localPresent = 'diacritics' in $ctrl;
-        var out = str.toLowerCase();
-
-        if (localPresent && $ctrl.diacritics === 'strip' || !localPresent && bimSelectConfig.diacritics === 'strip') {
-            if (out.normalize) {
-                // Most browsers
-                out = out.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-            } else {
-                // IE11
-                out = out.split('').map(function (char) {
-                    return NORMALIZE_MAP[char] || char;
-                }).join('');
-            }
-        }
-
-        return out;
-    }
-};
-
-/***/ }),
-/* 2 */
+/******/ ({
+
+/***/ "./node_modules/core-js/modules/_a-function.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/core-js/modules/_a-function.js ***!
+  \*****************************************************/
+/*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = angular;
+module.exports = function (it) {
+  if (typeof it != 'function') throw TypeError(it + ' is not a function!');
+  return it;
+};
+
 
 /***/ }),
-/* 3 */
+
+/***/ "./node_modules/core-js/modules/_add-to-unscopables.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/core-js/modules/_add-to-unscopables.js ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 22.1.3.31 Array.prototype[@@unscopables]
+var UNSCOPABLES = __webpack_require__(/*! ./_wks */ "./node_modules/core-js/modules/_wks.js")('unscopables');
+var ArrayProto = Array.prototype;
+if (ArrayProto[UNSCOPABLES] == undefined) __webpack_require__(/*! ./_hide */ "./node_modules/core-js/modules/_hide.js")(ArrayProto, UNSCOPABLES, {});
+module.exports = function (key) {
+  ArrayProto[UNSCOPABLES][key] = true;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_an-object.js":
+/*!****************************************************!*\
+  !*** ./node_modules/core-js/modules/_an-object.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isObject = __webpack_require__(/*! ./_is-object */ "./node_modules/core-js/modules/_is-object.js");
+module.exports = function (it) {
+  if (!isObject(it)) throw TypeError(it + ' is not an object!');
+  return it;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_array-includes.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/core-js/modules/_array-includes.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// false -> Array#indexOf
+// true  -> Array#includes
+var toIObject = __webpack_require__(/*! ./_to-iobject */ "./node_modules/core-js/modules/_to-iobject.js");
+var toLength = __webpack_require__(/*! ./_to-length */ "./node_modules/core-js/modules/_to-length.js");
+var toAbsoluteIndex = __webpack_require__(/*! ./_to-absolute-index */ "./node_modules/core-js/modules/_to-absolute-index.js");
+module.exports = function (IS_INCLUDES) {
+  return function ($this, el, fromIndex) {
+    var O = toIObject($this);
+    var length = toLength(O.length);
+    var index = toAbsoluteIndex(fromIndex, length);
+    var value;
+    // Array#includes uses SameValueZero equality algorithm
+    // eslint-disable-next-line no-self-compare
+    if (IS_INCLUDES && el != el) while (length > index) {
+      value = O[index++];
+      // eslint-disable-next-line no-self-compare
+      if (value != value) return true;
+    // Array#indexOf ignores holes, Array#includes - not
+    } else for (;length > index; index++) if (IS_INCLUDES || index in O) {
+      if (O[index] === el) return IS_INCLUDES || index || 0;
+    } return !IS_INCLUDES && -1;
+  };
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_array-methods.js":
+/*!********************************************************!*\
+  !*** ./node_modules/core-js/modules/_array-methods.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 0 -> Array#forEach
+// 1 -> Array#map
+// 2 -> Array#filter
+// 3 -> Array#some
+// 4 -> Array#every
+// 5 -> Array#find
+// 6 -> Array#findIndex
+var ctx = __webpack_require__(/*! ./_ctx */ "./node_modules/core-js/modules/_ctx.js");
+var IObject = __webpack_require__(/*! ./_iobject */ "./node_modules/core-js/modules/_iobject.js");
+var toObject = __webpack_require__(/*! ./_to-object */ "./node_modules/core-js/modules/_to-object.js");
+var toLength = __webpack_require__(/*! ./_to-length */ "./node_modules/core-js/modules/_to-length.js");
+var asc = __webpack_require__(/*! ./_array-species-create */ "./node_modules/core-js/modules/_array-species-create.js");
+module.exports = function (TYPE, $create) {
+  var IS_MAP = TYPE == 1;
+  var IS_FILTER = TYPE == 2;
+  var IS_SOME = TYPE == 3;
+  var IS_EVERY = TYPE == 4;
+  var IS_FIND_INDEX = TYPE == 6;
+  var NO_HOLES = TYPE == 5 || IS_FIND_INDEX;
+  var create = $create || asc;
+  return function ($this, callbackfn, that) {
+    var O = toObject($this);
+    var self = IObject(O);
+    var f = ctx(callbackfn, that, 3);
+    var length = toLength(self.length);
+    var index = 0;
+    var result = IS_MAP ? create($this, length) : IS_FILTER ? create($this, 0) : undefined;
+    var val, res;
+    for (;length > index; index++) if (NO_HOLES || index in self) {
+      val = self[index];
+      res = f(val, index, O);
+      if (TYPE) {
+        if (IS_MAP) result[index] = res;   // map
+        else if (res) switch (TYPE) {
+          case 3: return true;             // some
+          case 5: return val;              // find
+          case 6: return index;            // findIndex
+          case 2: result.push(val);        // filter
+        } else if (IS_EVERY) return false; // every
+      }
+    }
+    return IS_FIND_INDEX ? -1 : IS_SOME || IS_EVERY ? IS_EVERY : result;
+  };
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_array-species-constructor.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/core-js/modules/_array-species-constructor.js ***!
+  \********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isObject = __webpack_require__(/*! ./_is-object */ "./node_modules/core-js/modules/_is-object.js");
+var isArray = __webpack_require__(/*! ./_is-array */ "./node_modules/core-js/modules/_is-array.js");
+var SPECIES = __webpack_require__(/*! ./_wks */ "./node_modules/core-js/modules/_wks.js")('species');
+
+module.exports = function (original) {
+  var C;
+  if (isArray(original)) {
+    C = original.constructor;
+    // cross-realm fallback
+    if (typeof C == 'function' && (C === Array || isArray(C.prototype))) C = undefined;
+    if (isObject(C)) {
+      C = C[SPECIES];
+      if (C === null) C = undefined;
+    }
+  } return C === undefined ? Array : C;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_array-species-create.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/core-js/modules/_array-species-create.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 9.4.2.3 ArraySpeciesCreate(originalArray, length)
+var speciesConstructor = __webpack_require__(/*! ./_array-species-constructor */ "./node_modules/core-js/modules/_array-species-constructor.js");
+
+module.exports = function (original, length) {
+  return new (speciesConstructor(original))(length);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_cof.js":
+/*!**********************************************!*\
+  !*** ./node_modules/core-js/modules/_cof.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var toString = {}.toString;
+
+module.exports = function (it) {
+  return toString.call(it).slice(8, -1);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_core.js":
+/*!***********************************************!*\
+  !*** ./node_modules/core-js/modules/_core.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var core = module.exports = { version: '2.5.5' };
+if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_ctx.js":
+/*!**********************************************!*\
+  !*** ./node_modules/core-js/modules/_ctx.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// optional / simple context binding
+var aFunction = __webpack_require__(/*! ./_a-function */ "./node_modules/core-js/modules/_a-function.js");
+module.exports = function (fn, that, length) {
+  aFunction(fn);
+  if (that === undefined) return fn;
+  switch (length) {
+    case 1: return function (a) {
+      return fn.call(that, a);
+    };
+    case 2: return function (a, b) {
+      return fn.call(that, a, b);
+    };
+    case 3: return function (a, b, c) {
+      return fn.call(that, a, b, c);
+    };
+  }
+  return function (/* ...args */) {
+    return fn.apply(that, arguments);
+  };
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_defined.js":
+/*!**************************************************!*\
+  !*** ./node_modules/core-js/modules/_defined.js ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// 7.2.1 RequireObjectCoercible(argument)
+module.exports = function (it) {
+  if (it == undefined) throw TypeError("Can't call method on  " + it);
+  return it;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_descriptors.js":
+/*!******************************************************!*\
+  !*** ./node_modules/core-js/modules/_descriptors.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Thank's IE8 for his funny defineProperty
+module.exports = !__webpack_require__(/*! ./_fails */ "./node_modules/core-js/modules/_fails.js")(function () {
+  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_dom-create.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/core-js/modules/_dom-create.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isObject = __webpack_require__(/*! ./_is-object */ "./node_modules/core-js/modules/_is-object.js");
+var document = __webpack_require__(/*! ./_global */ "./node_modules/core-js/modules/_global.js").document;
+// typeof document.createElement is 'object' in old IE
+var is = isObject(document) && isObject(document.createElement);
+module.exports = function (it) {
+  return is ? document.createElement(it) : {};
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_enum-bug-keys.js":
+/*!********************************************************!*\
+  !*** ./node_modules/core-js/modules/_enum-bug-keys.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// IE 8- don't enum bug keys
+module.exports = (
+  'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
+).split(',');
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_export.js":
+/*!*************************************************!*\
+  !*** ./node_modules/core-js/modules/_export.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(/*! ./_global */ "./node_modules/core-js/modules/_global.js");
+var core = __webpack_require__(/*! ./_core */ "./node_modules/core-js/modules/_core.js");
+var hide = __webpack_require__(/*! ./_hide */ "./node_modules/core-js/modules/_hide.js");
+var redefine = __webpack_require__(/*! ./_redefine */ "./node_modules/core-js/modules/_redefine.js");
+var ctx = __webpack_require__(/*! ./_ctx */ "./node_modules/core-js/modules/_ctx.js");
+var PROTOTYPE = 'prototype';
+
+var $export = function (type, name, source) {
+  var IS_FORCED = type & $export.F;
+  var IS_GLOBAL = type & $export.G;
+  var IS_STATIC = type & $export.S;
+  var IS_PROTO = type & $export.P;
+  var IS_BIND = type & $export.B;
+  var target = IS_GLOBAL ? global : IS_STATIC ? global[name] || (global[name] = {}) : (global[name] || {})[PROTOTYPE];
+  var exports = IS_GLOBAL ? core : core[name] || (core[name] = {});
+  var expProto = exports[PROTOTYPE] || (exports[PROTOTYPE] = {});
+  var key, own, out, exp;
+  if (IS_GLOBAL) source = name;
+  for (key in source) {
+    // contains in native
+    own = !IS_FORCED && target && target[key] !== undefined;
+    // export native or passed
+    out = (own ? target : source)[key];
+    // bind timers to global for call from export context
+    exp = IS_BIND && own ? ctx(out, global) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;
+    // extend global
+    if (target) redefine(target, key, out, type & $export.U);
+    // export
+    if (exports[key] != out) hide(exports, key, exp);
+    if (IS_PROTO && expProto[key] != out) expProto[key] = out;
+  }
+};
+global.core = core;
+// type bitmap
+$export.F = 1;   // forced
+$export.G = 2;   // global
+$export.S = 4;   // static
+$export.P = 8;   // proto
+$export.B = 16;  // bind
+$export.W = 32;  // wrap
+$export.U = 64;  // safe
+$export.R = 128; // real proto method for `library`
+module.exports = $export;
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_fails-is-regexp.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/core-js/modules/_fails-is-regexp.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var MATCH = __webpack_require__(/*! ./_wks */ "./node_modules/core-js/modules/_wks.js")('match');
+module.exports = function (KEY) {
+  var re = /./;
+  try {
+    '/./'[KEY](re);
+  } catch (e) {
+    try {
+      re[MATCH] = false;
+      return !'/./'[KEY](re);
+    } catch (f) { /* empty */ }
+  } return true;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_fails.js":
+/*!************************************************!*\
+  !*** ./node_modules/core-js/modules/_fails.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = function (exec) {
+  try {
+    return !!exec();
+  } catch (e) {
+    return true;
+  }
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_fix-re-wks.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/core-js/modules/_fix-re-wks.js ***!
+  \*****************************************************/
+/*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+var hide = __webpack_require__(/*! ./_hide */ "./node_modules/core-js/modules/_hide.js");
+var redefine = __webpack_require__(/*! ./_redefine */ "./node_modules/core-js/modules/_redefine.js");
+var fails = __webpack_require__(/*! ./_fails */ "./node_modules/core-js/modules/_fails.js");
+var defined = __webpack_require__(/*! ./_defined */ "./node_modules/core-js/modules/_defined.js");
+var wks = __webpack_require__(/*! ./_wks */ "./node_modules/core-js/modules/_wks.js");
 
-var angular = __webpack_require__(2);
+module.exports = function (KEY, length, exec) {
+  var SYMBOL = wks(KEY);
+  var fns = exec(defined, SYMBOL, ''[KEY]);
+  var strfn = fns[0];
+  var rxfn = fns[1];
+  if (fails(function () {
+    var O = {};
+    O[SYMBOL] = function () { return 7; };
+    return ''[KEY](O) != 7;
+  })) {
+    redefine(String.prototype, KEY, strfn);
+    hide(RegExp.prototype, SYMBOL, length == 2
+      // 21.2.5.8 RegExp.prototype[@@replace](string, replaceValue)
+      // 21.2.5.11 RegExp.prototype[@@split](string, limit)
+      ? function (string, arg) { return rxfn.call(string, this, arg); }
+      // 21.2.5.6 RegExp.prototype[@@match](string)
+      // 21.2.5.9 RegExp.prototype[@@search](string)
+      : function (string) { return rxfn.call(string, this); }
+    );
+  }
+};
 
-var component = __webpack_require__(1);
-var provider = __webpack_require__(0);
-
-module.exports = angular.module('bim.select', ['vs-repeat']).component(component.name, component.impl).provider(provider.name, provider.impl).name;
 
 /***/ }),
-/* 4 */
+
+/***/ "./node_modules/core-js/modules/_global.js":
+/*!*************************************************!*\
+  !*** ./node_modules/core-js/modules/_global.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
+var global = module.exports = typeof window != 'undefined' && window.Math == Math
+  ? window : typeof self != 'undefined' && self.Math == Math ? self
+  // eslint-disable-next-line no-new-func
+  : Function('return this')();
+if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_has.js":
+/*!**********************************************!*\
+  !*** ./node_modules/core-js/modules/_has.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var hasOwnProperty = {}.hasOwnProperty;
+module.exports = function (it, key) {
+  return hasOwnProperty.call(it, key);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_hide.js":
+/*!***********************************************!*\
+  !*** ./node_modules/core-js/modules/_hide.js ***!
+  \***********************************************/
+/*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(5)(true);
+var dP = __webpack_require__(/*! ./_object-dp */ "./node_modules/core-js/modules/_object-dp.js");
+var createDesc = __webpack_require__(/*! ./_property-desc */ "./node_modules/core-js/modules/_property-desc.js");
+module.exports = __webpack_require__(/*! ./_descriptors */ "./node_modules/core-js/modules/_descriptors.js") ? function (object, key, value) {
+  return dP.f(object, key, createDesc(1, value));
+} : function (object, key, value) {
+  object[key] = value;
+  return object;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_ie8-dom-define.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/core-js/modules/_ie8-dom-define.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = !__webpack_require__(/*! ./_descriptors */ "./node_modules/core-js/modules/_descriptors.js") && !__webpack_require__(/*! ./_fails */ "./node_modules/core-js/modules/_fails.js")(function () {
+  return Object.defineProperty(__webpack_require__(/*! ./_dom-create */ "./node_modules/core-js/modules/_dom-create.js")('div'), 'a', { get: function () { return 7; } }).a != 7;
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_iobject.js":
+/*!**************************************************!*\
+  !*** ./node_modules/core-js/modules/_iobject.js ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// fallback for non-array-like ES3 and non-enumerable old V8 strings
+var cof = __webpack_require__(/*! ./_cof */ "./node_modules/core-js/modules/_cof.js");
+// eslint-disable-next-line no-prototype-builtins
+module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
+  return cof(it) == 'String' ? it.split('') : Object(it);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_is-array.js":
+/*!***************************************************!*\
+  !*** ./node_modules/core-js/modules/_is-array.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 7.2.2 IsArray(argument)
+var cof = __webpack_require__(/*! ./_cof */ "./node_modules/core-js/modules/_cof.js");
+module.exports = Array.isArray || function isArray(arg) {
+  return cof(arg) == 'Array';
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_is-object.js":
+/*!****************************************************!*\
+  !*** ./node_modules/core-js/modules/_is-object.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = function (it) {
+  return typeof it === 'object' ? it !== null : typeof it === 'function';
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_is-regexp.js":
+/*!****************************************************!*\
+  !*** ./node_modules/core-js/modules/_is-regexp.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 7.2.8 IsRegExp(argument)
+var isObject = __webpack_require__(/*! ./_is-object */ "./node_modules/core-js/modules/_is-object.js");
+var cof = __webpack_require__(/*! ./_cof */ "./node_modules/core-js/modules/_cof.js");
+var MATCH = __webpack_require__(/*! ./_wks */ "./node_modules/core-js/modules/_wks.js")('match');
+module.exports = function (it) {
+  var isRegExp;
+  return isObject(it) && ((isRegExp = it[MATCH]) !== undefined ? !!isRegExp : cof(it) == 'RegExp');
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_object-assign.js":
+/*!********************************************************!*\
+  !*** ./node_modules/core-js/modules/_object-assign.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// 19.1.2.1 Object.assign(target, source, ...)
+var getKeys = __webpack_require__(/*! ./_object-keys */ "./node_modules/core-js/modules/_object-keys.js");
+var gOPS = __webpack_require__(/*! ./_object-gops */ "./node_modules/core-js/modules/_object-gops.js");
+var pIE = __webpack_require__(/*! ./_object-pie */ "./node_modules/core-js/modules/_object-pie.js");
+var toObject = __webpack_require__(/*! ./_to-object */ "./node_modules/core-js/modules/_to-object.js");
+var IObject = __webpack_require__(/*! ./_iobject */ "./node_modules/core-js/modules/_iobject.js");
+var $assign = Object.assign;
+
+// should work with symbols and should have deterministic property order (V8 bug)
+module.exports = !$assign || __webpack_require__(/*! ./_fails */ "./node_modules/core-js/modules/_fails.js")(function () {
+  var A = {};
+  var B = {};
+  // eslint-disable-next-line no-undef
+  var S = Symbol();
+  var K = 'abcdefghijklmnopqrst';
+  A[S] = 7;
+  K.split('').forEach(function (k) { B[k] = k; });
+  return $assign({}, A)[S] != 7 || Object.keys($assign({}, B)).join('') != K;
+}) ? function assign(target, source) { // eslint-disable-line no-unused-vars
+  var T = toObject(target);
+  var aLen = arguments.length;
+  var index = 1;
+  var getSymbols = gOPS.f;
+  var isEnum = pIE.f;
+  while (aLen > index) {
+    var S = IObject(arguments[index++]);
+    var keys = getSymbols ? getKeys(S).concat(getSymbols(S)) : getKeys(S);
+    var length = keys.length;
+    var j = 0;
+    var key;
+    while (length > j) if (isEnum.call(S, key = keys[j++])) T[key] = S[key];
+  } return T;
+} : $assign;
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_object-dp.js":
+/*!****************************************************!*\
+  !*** ./node_modules/core-js/modules/_object-dp.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var anObject = __webpack_require__(/*! ./_an-object */ "./node_modules/core-js/modules/_an-object.js");
+var IE8_DOM_DEFINE = __webpack_require__(/*! ./_ie8-dom-define */ "./node_modules/core-js/modules/_ie8-dom-define.js");
+var toPrimitive = __webpack_require__(/*! ./_to-primitive */ "./node_modules/core-js/modules/_to-primitive.js");
+var dP = Object.defineProperty;
+
+exports.f = __webpack_require__(/*! ./_descriptors */ "./node_modules/core-js/modules/_descriptors.js") ? Object.defineProperty : function defineProperty(O, P, Attributes) {
+  anObject(O);
+  P = toPrimitive(P, true);
+  anObject(Attributes);
+  if (IE8_DOM_DEFINE) try {
+    return dP(O, P, Attributes);
+  } catch (e) { /* empty */ }
+  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported!');
+  if ('value' in Attributes) O[P] = Attributes.value;
+  return O;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_object-gops.js":
+/*!******************************************************!*\
+  !*** ./node_modules/core-js/modules/_object-gops.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+exports.f = Object.getOwnPropertySymbols;
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_object-keys-internal.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/core-js/modules/_object-keys-internal.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var has = __webpack_require__(/*! ./_has */ "./node_modules/core-js/modules/_has.js");
+var toIObject = __webpack_require__(/*! ./_to-iobject */ "./node_modules/core-js/modules/_to-iobject.js");
+var arrayIndexOf = __webpack_require__(/*! ./_array-includes */ "./node_modules/core-js/modules/_array-includes.js")(false);
+var IE_PROTO = __webpack_require__(/*! ./_shared-key */ "./node_modules/core-js/modules/_shared-key.js")('IE_PROTO');
+
+module.exports = function (object, names) {
+  var O = toIObject(object);
+  var i = 0;
+  var result = [];
+  var key;
+  for (key in O) if (key != IE_PROTO) has(O, key) && result.push(key);
+  // Don't enum bug & hidden keys
+  while (names.length > i) if (has(O, key = names[i++])) {
+    ~arrayIndexOf(result, key) || result.push(key);
+  }
+  return result;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_object-keys.js":
+/*!******************************************************!*\
+  !*** ./node_modules/core-js/modules/_object-keys.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.14 / 15.2.3.14 Object.keys(O)
+var $keys = __webpack_require__(/*! ./_object-keys-internal */ "./node_modules/core-js/modules/_object-keys-internal.js");
+var enumBugKeys = __webpack_require__(/*! ./_enum-bug-keys */ "./node_modules/core-js/modules/_enum-bug-keys.js");
+
+module.exports = Object.keys || function keys(O) {
+  return $keys(O, enumBugKeys);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_object-pie.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/core-js/modules/_object-pie.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+exports.f = {}.propertyIsEnumerable;
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_property-desc.js":
+/*!********************************************************!*\
+  !*** ./node_modules/core-js/modules/_property-desc.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = function (bitmap, value) {
+  return {
+    enumerable: !(bitmap & 1),
+    configurable: !(bitmap & 2),
+    writable: !(bitmap & 4),
+    value: value
+  };
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_redefine.js":
+/*!***************************************************!*\
+  !*** ./node_modules/core-js/modules/_redefine.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(/*! ./_global */ "./node_modules/core-js/modules/_global.js");
+var hide = __webpack_require__(/*! ./_hide */ "./node_modules/core-js/modules/_hide.js");
+var has = __webpack_require__(/*! ./_has */ "./node_modules/core-js/modules/_has.js");
+var SRC = __webpack_require__(/*! ./_uid */ "./node_modules/core-js/modules/_uid.js")('src');
+var TO_STRING = 'toString';
+var $toString = Function[TO_STRING];
+var TPL = ('' + $toString).split(TO_STRING);
+
+__webpack_require__(/*! ./_core */ "./node_modules/core-js/modules/_core.js").inspectSource = function (it) {
+  return $toString.call(it);
+};
+
+(module.exports = function (O, key, val, safe) {
+  var isFunction = typeof val == 'function';
+  if (isFunction) has(val, 'name') || hide(val, 'name', key);
+  if (O[key] === val) return;
+  if (isFunction) has(val, SRC) || hide(val, SRC, O[key] ? '' + O[key] : TPL.join(String(key)));
+  if (O === global) {
+    O[key] = val;
+  } else if (!safe) {
+    delete O[key];
+    hide(O, key, val);
+  } else if (O[key]) {
+    O[key] = val;
+  } else {
+    hide(O, key, val);
+  }
+// add fake Function#toString for correct work wrapped methods / constructors with methods like LoDash isNative
+})(Function.prototype, TO_STRING, function toString() {
+  return typeof this == 'function' && this[SRC] || $toString.call(this);
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_shared-key.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/core-js/modules/_shared-key.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var shared = __webpack_require__(/*! ./_shared */ "./node_modules/core-js/modules/_shared.js")('keys');
+var uid = __webpack_require__(/*! ./_uid */ "./node_modules/core-js/modules/_uid.js");
+module.exports = function (key) {
+  return shared[key] || (shared[key] = uid(key));
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_shared.js":
+/*!*************************************************!*\
+  !*** ./node_modules/core-js/modules/_shared.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(/*! ./_global */ "./node_modules/core-js/modules/_global.js");
+var SHARED = '__core-js_shared__';
+var store = global[SHARED] || (global[SHARED] = {});
+module.exports = function (key) {
+  return store[key] || (store[key] = {});
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_string-context.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/core-js/modules/_string-context.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// helper for String#{startsWith, endsWith, includes}
+var isRegExp = __webpack_require__(/*! ./_is-regexp */ "./node_modules/core-js/modules/_is-regexp.js");
+var defined = __webpack_require__(/*! ./_defined */ "./node_modules/core-js/modules/_defined.js");
+
+module.exports = function (that, searchString, NAME) {
+  if (isRegExp(searchString)) throw TypeError('String#' + NAME + " doesn't accept regex!");
+  return String(defined(that));
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_to-absolute-index.js":
+/*!************************************************************!*\
+  !*** ./node_modules/core-js/modules/_to-absolute-index.js ***!
+  \************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var toInteger = __webpack_require__(/*! ./_to-integer */ "./node_modules/core-js/modules/_to-integer.js");
+var max = Math.max;
+var min = Math.min;
+module.exports = function (index, length) {
+  index = toInteger(index);
+  return index < 0 ? max(index + length, 0) : min(index, length);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_to-integer.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/core-js/modules/_to-integer.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// 7.1.4 ToInteger
+var ceil = Math.ceil;
+var floor = Math.floor;
+module.exports = function (it) {
+  return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_to-iobject.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/core-js/modules/_to-iobject.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// to indexed object, toObject with fallback for non-array-like ES3 strings
+var IObject = __webpack_require__(/*! ./_iobject */ "./node_modules/core-js/modules/_iobject.js");
+var defined = __webpack_require__(/*! ./_defined */ "./node_modules/core-js/modules/_defined.js");
+module.exports = function (it) {
+  return IObject(defined(it));
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_to-length.js":
+/*!****************************************************!*\
+  !*** ./node_modules/core-js/modules/_to-length.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 7.1.15 ToLength
+var toInteger = __webpack_require__(/*! ./_to-integer */ "./node_modules/core-js/modules/_to-integer.js");
+var min = Math.min;
+module.exports = function (it) {
+  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_to-object.js":
+/*!****************************************************!*\
+  !*** ./node_modules/core-js/modules/_to-object.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 7.1.13 ToObject(argument)
+var defined = __webpack_require__(/*! ./_defined */ "./node_modules/core-js/modules/_defined.js");
+module.exports = function (it) {
+  return Object(defined(it));
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_to-primitive.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/core-js/modules/_to-primitive.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 7.1.1 ToPrimitive(input [, PreferredType])
+var isObject = __webpack_require__(/*! ./_is-object */ "./node_modules/core-js/modules/_is-object.js");
+// instead of the ES6 spec version, we didn't implement @@toPrimitive case
+// and the second argument - flag - preferred type is a string
+module.exports = function (it, S) {
+  if (!isObject(it)) return it;
+  var fn, val;
+  if (S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;
+  if (typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it))) return val;
+  if (!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;
+  throw TypeError("Can't convert object to primitive value");
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_uid.js":
+/*!**********************************************!*\
+  !*** ./node_modules/core-js/modules/_uid.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var id = 0;
+var px = Math.random();
+module.exports = function (key) {
+  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/_wks.js":
+/*!**********************************************!*\
+  !*** ./node_modules/core-js/modules/_wks.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var store = __webpack_require__(/*! ./_shared */ "./node_modules/core-js/modules/_shared.js")('wks');
+var uid = __webpack_require__(/*! ./_uid */ "./node_modules/core-js/modules/_uid.js");
+var Symbol = __webpack_require__(/*! ./_global */ "./node_modules/core-js/modules/_global.js").Symbol;
+var USE_SYMBOL = typeof Symbol == 'function';
+
+var $exports = module.exports = function (name) {
+  return store[name] || (store[name] =
+    USE_SYMBOL && Symbol[name] || (USE_SYMBOL ? Symbol : uid)('Symbol.' + name));
+};
+
+$exports.store = store;
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es6.array.find.js":
+/*!********************************************************!*\
+  !*** ./node_modules/core-js/modules/es6.array.find.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// 22.1.3.8 Array.prototype.find(predicate, thisArg = undefined)
+var $export = __webpack_require__(/*! ./_export */ "./node_modules/core-js/modules/_export.js");
+var $find = __webpack_require__(/*! ./_array-methods */ "./node_modules/core-js/modules/_array-methods.js")(5);
+var KEY = 'find';
+var forced = true;
+// Shouldn't skip holes
+if (KEY in []) Array(1)[KEY](function () { forced = false; });
+$export($export.P + $export.F * forced, 'Array', {
+  find: function find(callbackfn /* , that = undefined */) {
+    return $find(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
+  }
+});
+__webpack_require__(/*! ./_add-to-unscopables */ "./node_modules/core-js/modules/_add-to-unscopables.js")(KEY);
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es6.function.name.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/core-js/modules/es6.function.name.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var dP = __webpack_require__(/*! ./_object-dp */ "./node_modules/core-js/modules/_object-dp.js").f;
+var FProto = Function.prototype;
+var nameRE = /^\s*function ([^ (]*)/;
+var NAME = 'name';
+
+// 19.2.4.2 name
+NAME in FProto || __webpack_require__(/*! ./_descriptors */ "./node_modules/core-js/modules/_descriptors.js") && dP(FProto, NAME, {
+  configurable: true,
+  get: function () {
+    try {
+      return ('' + this).match(nameRE)[1];
+    } catch (e) {
+      return '';
+    }
+  }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es6.object.assign.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/core-js/modules/es6.object.assign.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.3.1 Object.assign(target, source)
+var $export = __webpack_require__(/*! ./_export */ "./node_modules/core-js/modules/_export.js");
+
+$export($export.S + $export.F, 'Object', { assign: __webpack_require__(/*! ./_object-assign */ "./node_modules/core-js/modules/_object-assign.js") });
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es6.regexp.replace.js":
+/*!************************************************************!*\
+  !*** ./node_modules/core-js/modules/es6.regexp.replace.js ***!
+  \************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// @@replace logic
+__webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re-wks.js")('replace', 2, function (defined, REPLACE, $replace) {
+  // 21.1.3.14 String.prototype.replace(searchValue, replaceValue)
+  return [function replace(searchValue, replaceValue) {
+    'use strict';
+    var O = defined(this);
+    var fn = searchValue == undefined ? undefined : searchValue[REPLACE];
+    return fn !== undefined
+      ? fn.call(searchValue, O, replaceValue)
+      : $replace.call(String(O), searchValue, replaceValue);
+  }, $replace];
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es6.regexp.split.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/core-js/modules/es6.regexp.split.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// @@split logic
+__webpack_require__(/*! ./_fix-re-wks */ "./node_modules/core-js/modules/_fix-re-wks.js")('split', 2, function (defined, SPLIT, $split) {
+  'use strict';
+  var isRegExp = __webpack_require__(/*! ./_is-regexp */ "./node_modules/core-js/modules/_is-regexp.js");
+  var _split = $split;
+  var $push = [].push;
+  var $SPLIT = 'split';
+  var LENGTH = 'length';
+  var LAST_INDEX = 'lastIndex';
+  if (
+    'abbc'[$SPLIT](/(b)*/)[1] == 'c' ||
+    'test'[$SPLIT](/(?:)/, -1)[LENGTH] != 4 ||
+    'ab'[$SPLIT](/(?:ab)*/)[LENGTH] != 2 ||
+    '.'[$SPLIT](/(.?)(.?)/)[LENGTH] != 4 ||
+    '.'[$SPLIT](/()()/)[LENGTH] > 1 ||
+    ''[$SPLIT](/.?/)[LENGTH]
+  ) {
+    var NPCG = /()??/.exec('')[1] === undefined; // nonparticipating capturing group
+    // based on es5-shim implementation, need to rework it
+    $split = function (separator, limit) {
+      var string = String(this);
+      if (separator === undefined && limit === 0) return [];
+      // If `separator` is not a regex, use native split
+      if (!isRegExp(separator)) return _split.call(string, separator, limit);
+      var output = [];
+      var flags = (separator.ignoreCase ? 'i' : '') +
+                  (separator.multiline ? 'm' : '') +
+                  (separator.unicode ? 'u' : '') +
+                  (separator.sticky ? 'y' : '');
+      var lastLastIndex = 0;
+      var splitLimit = limit === undefined ? 4294967295 : limit >>> 0;
+      // Make `global` and avoid `lastIndex` issues by working with a copy
+      var separatorCopy = new RegExp(separator.source, flags + 'g');
+      var separator2, match, lastIndex, lastLength, i;
+      // Doesn't need flags gy, but they don't hurt
+      if (!NPCG) separator2 = new RegExp('^' + separatorCopy.source + '$(?!\\s)', flags);
+      while (match = separatorCopy.exec(string)) {
+        // `separatorCopy.lastIndex` is not reliable cross-browser
+        lastIndex = match.index + match[0][LENGTH];
+        if (lastIndex > lastLastIndex) {
+          output.push(string.slice(lastLastIndex, match.index));
+          // Fix browsers whose `exec` methods don't consistently return `undefined` for NPCG
+          // eslint-disable-next-line no-loop-func
+          if (!NPCG && match[LENGTH] > 1) match[0].replace(separator2, function () {
+            for (i = 1; i < arguments[LENGTH] - 2; i++) if (arguments[i] === undefined) match[i] = undefined;
+          });
+          if (match[LENGTH] > 1 && match.index < string[LENGTH]) $push.apply(output, match.slice(1));
+          lastLength = match[0][LENGTH];
+          lastLastIndex = lastIndex;
+          if (output[LENGTH] >= splitLimit) break;
+        }
+        if (separatorCopy[LAST_INDEX] === match.index) separatorCopy[LAST_INDEX]++; // Avoid an infinite loop
+      }
+      if (lastLastIndex === string[LENGTH]) {
+        if (lastLength || !separatorCopy.test('')) output.push('');
+      } else output.push(string.slice(lastLastIndex));
+      return output[LENGTH] > splitLimit ? output.slice(0, splitLimit) : output;
+    };
+  // Chakra, V8
+  } else if ('0'[$SPLIT](undefined, 0)[LENGTH]) {
+    $split = function (separator, limit) {
+      return separator === undefined && limit === 0 ? [] : _split.call(this, separator, limit);
+    };
+  }
+  // 21.1.3.17 String.prototype.split(separator, limit)
+  return [function split(separator, limit) {
+    var O = defined(this);
+    var fn = separator == undefined ? undefined : separator[SPLIT];
+    return fn !== undefined ? fn.call(separator, O, limit) : $split.call(String(O), separator, limit);
+  }, $split];
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es6.string.includes.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/core-js/modules/es6.string.includes.js ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+// 21.1.3.7 String.prototype.includes(searchString, position = 0)
+
+var $export = __webpack_require__(/*! ./_export */ "./node_modules/core-js/modules/_export.js");
+var context = __webpack_require__(/*! ./_string-context */ "./node_modules/core-js/modules/_string-context.js");
+var INCLUDES = 'includes';
+
+$export($export.P + $export.F * __webpack_require__(/*! ./_fails-is-regexp */ "./node_modules/core-js/modules/_fails-is-regexp.js")(INCLUDES), 'String', {
+  includes: function includes(searchString /* , position = 0 */) {
+    return !!~context(this, searchString, INCLUDES)
+      .indexOf(searchString, arguments.length > 1 ? arguments[1] : undefined);
+  }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es7.array.includes.js":
+/*!************************************************************!*\
+  !*** ./node_modules/core-js/modules/es7.array.includes.js ***!
+  \************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// https://github.com/tc39/Array.prototype.includes
+var $export = __webpack_require__(/*! ./_export */ "./node_modules/core-js/modules/_export.js");
+var $includes = __webpack_require__(/*! ./_array-includes */ "./node_modules/core-js/modules/_array-includes.js")(true);
+
+$export($export.P, 'Array', {
+  includes: function includes(el /* , fromIndex = 0 */) {
+    return $includes(this, el, arguments.length > 1 ? arguments[1] : undefined);
+  }
+});
+
+__webpack_require__(/*! ./_add-to-unscopables */ "./node_modules/core-js/modules/_add-to-unscopables.js")('includes');
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js??ref--5-1!./node_modules/less-loader/dist/cjs.js??ref--5-2!./src/bim-select.less":
+/*!******************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--5-1!./node_modules/less-loader/dist/cjs.js??ref--5-2!./src/bim-select.less ***!
+  \******************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(true);
 // imports
 
 
@@ -651,7 +1284,12 @@ exports.push([module.i, "bim-select {\n  display: block;\n}\nbim-select .bim-sel
 
 
 /***/ }),
-/* 5 */
+
+/***/ "./node_modules/css-loader/lib/css-base.js":
+/*!*************************************************!*\
+  !*** ./node_modules/css-loader/lib/css-base.js ***!
+  \*************************************************/
+/*! no static exports found */
 /***/ (function(module, exports) {
 
 /*
@@ -733,56 +1371,12 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 6 */
-/***/ (function(module, exports) {
 
-var path = './bim.select/bim-select-item.template.html';
-var html = "<span\n    class=\"bim-select-item\"\n    title=\"{{ match.text }}\">{{ match.text }}</span>\n";
-window.angular.module('ng').run(['$templateCache', function(c) { c.put(path, html) }]);
-module.exports = path;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports) {
-
-var path = './bim.select/bim-select.template.html';
-var html = "<div class=\"dropdown\" ng-class=\"{ open: $ctrl.active }\">\n    <div class=\"input-group\">\n        <input class=\"form-control\"\n               type=\"text\"\n               placeholder=\"{{ $ctrl.placeholderText() }}\"\n               ng-keydown=\"$ctrl.keydownHandler($event)\"\n               ng-click=\"$ctrl.activateHandler($event)\"\n               ng-blur=\"$ctrl.deactivateHandler($event)\"\n               ng-focus=\"$ctrl.activateHandler($event)\"\n               ng-change=\"$ctrl.inputValueChangeHandler()\"\n               ng-disabled=\"$ctrl.isDisabled()\"\n               ng-model=\"$ctrl.inputValue\">\n        <span class=\"input-group-btn\">\n            <button class=\"btn btn-default bim-select--clear\"\n                    type=\"button\"\n                    ng-click=\"$ctrl.clear()\"\n                    ng-disabled=\"$ctrl.isDisabled()\"\n                    ng-if=\"$ctrl.isClearable() && !$ctrl.isDisabled()\">\n                <span class=\"fa fa-remove\"></span>\n            </button>\n            <button class=\"btn btn-default bim-select--toggle\"\n                    type=\"button\"\n                    ng-disabled=\"$ctrl.isDisabled()\"\n                    ng-click=\"$ctrl.toggleHandler()\">\n                <span class=\"fa fa-caret-down\"></span>\n            </button>\n        </span>\n    </div>\n    <ul class=\"bim-select-dropdown dropdown-menu\"\n        vs-repeat\n        role=\"listbox\"\n        ng-style=\"{ width: $ctrl.width }\">\n        <li role=\"option\"\n            ng-repeat=\"match in $ctrl.matches track by match.id\"\n            ng-click=\"$ctrl.select($event, match)\"\n            ng-class=\"{ active: match.index === $ctrl.activeIndex }\">\n            <ng-include src=\"$ctrl.internalItemTemplateUrl\"></ng-include>\n        </li>\n    </ul>\n</div>\n";
-window.angular.module('ng').run(['$templateCache', function(c) { c.put(path, html) }]);
-module.exports = path;
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(4);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
-var transform;
-
-var options = {}
-options.transform = transform
-// add the styles to the DOM
-var update = __webpack_require__(9)(content, options);
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../node_modules/css-loader/index.js??ref--1-1!../node_modules/less-loader/dist/index.js??ref--1-2!./bim-select.less", function() {
-			var newContent = require("!!../node_modules/css-loader/index.js??ref--1-1!../node_modules/less-loader/dist/index.js??ref--1-2!./bim-select.less");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 9 */
+/***/ "./node_modules/style-loader/lib/addStyles.js":
+/*!****************************************************!*\
+  !*** ./node_modules/style-loader/lib/addStyles.js ***!
+  \****************************************************/
+/*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -810,25 +1404,45 @@ var isOldIE = memoize(function () {
 	return window && document && document.all && !window.atob;
 });
 
+var getTarget = function (target) {
+  return document.querySelector(target);
+};
+
 var getElement = (function (fn) {
 	var memo = {};
 
-	return function(selector) {
-		if (typeof memo[selector] === "undefined") {
-			memo[selector] = fn.call(this, selector);
+	return function(target) {
+                // If passing function in options, then use it for resolve "head" element.
+                // Useful for Shadow Root style i.e
+                // {
+                //   insertInto: function () { return document.querySelector("#foo").shadowRoot }
+                // }
+                if (typeof target === 'function') {
+                        return target();
+                }
+                if (typeof memo[target] === "undefined") {
+			var styleTarget = getTarget.call(this, target);
+			// Special case to return head of iframe instead of iframe itself
+			if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
+				try {
+					// This will throw an exception if access to iframe is blocked
+					// due to cross-origin restrictions
+					styleTarget = styleTarget.contentDocument.head;
+				} catch(e) {
+					styleTarget = null;
+				}
+			}
+			memo[target] = styleTarget;
 		}
-
-		return memo[selector]
+		return memo[target]
 	};
-})(function (target) {
-	return document.querySelector(target)
-});
+})();
 
 var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(10);
+var	fixUrls = __webpack_require__(/*! ./urls */ "./node_modules/style-loader/lib/urls.js");
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -841,10 +1455,10 @@ module.exports = function(list, options) {
 
 	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
 	// tags it will allow on a page
-	if (!options.singleton) options.singleton = isOldIE();
+	if (!options.singleton && typeof options.singleton !== "boolean") options.singleton = isOldIE();
 
 	// By default, add <style> tags to the <head> element
-	if (!options.insertInto) options.insertInto = "head";
+        if (!options.insertInto) options.insertInto = "head";
 
 	// By default, add <style> tags to the bottom of the target
 	if (!options.insertAt) options.insertAt = "bottom";
@@ -947,16 +1561,19 @@ function insertStyleElement (options, style) {
 		stylesInsertedAtTop.push(style);
 	} else if (options.insertAt === "bottom") {
 		target.appendChild(style);
+	} else if (typeof options.insertAt === "object" && options.insertAt.before) {
+		var nextSibling = getElement(options.insertInto + " " + options.insertAt.before);
+		target.insertBefore(style, nextSibling);
 	} else {
-		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+		throw new Error("[Style Loader]\n\n Invalid value for parameter 'insertAt' ('options.insertAt') found.\n Must be 'top', 'bottom', or Object.\n (https://github.com/webpack-contrib/style-loader#insertat)\n");
 	}
 }
 
 function removeStyleElement (style) {
+	if (style.parentNode === null) return false;
 	style.parentNode.removeChild(style);
 
 	var idx = stylesInsertedAtTop.indexOf(style);
-
 	if(idx >= 0) {
 		stylesInsertedAtTop.splice(idx, 1);
 	}
@@ -1141,7 +1758,12 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 10 */
+
+/***/ "./node_modules/style-loader/lib/urls.js":
+/*!***********************************************!*\
+  !*** ./node_modules/style-loader/lib/urls.js ***!
+  \***********************************************/
+/*! no static exports found */
 /***/ (function(module, exports) {
 
 
@@ -1208,7 +1830,7 @@ module.exports = function (css) {
 			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
 
 		// already a full url? no change
-		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/)/i.test(unquotedOrigUrl)) {
+		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/|\s*$)/i.test(unquotedOrigUrl)) {
 		  return fullMatch;
 		}
 
@@ -1236,11 +1858,697 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 11 */
+
+/***/ "./src/bim-select-config.provider.js":
+/*!*******************************************!*\
+  !*** ./src/bim-select-config.provider.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! core-js/modules/es6.object.assign */ "./node_modules/core-js/modules/es6.object.assign.js");
+
+__webpack_require__(/*! core-js/modules/es7.array.includes */ "./node_modules/core-js/modules/es7.array.includes.js");
+
+__webpack_require__(/*! core-js/modules/es6.string.includes */ "./node_modules/core-js/modules/es6.string.includes.js");
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+exports.name = 'bimSelectConfig';
+var config = {
+  diacritics: null,
+  itemTemplateUrl: null,
+  placeholder: null,
+  sorter: null
+};
+/**
+ * @ngdoc provider
+ * @name bimSelectConfigProvider
+ * @description
+ * Use bimSelectConfigProvider to be able to reuse a set of configuration
+ * options for all instances of `bimSelect` in an application.
+ *
+ * @example
+ * const randomSorter = () => 2 * Math.random() - 1;
+ *
+ * angular.module('app').config(function(bimSelectConfigProvider) {
+ *     bimSelectConfigProvider.set('sorter', randomSorter);
+ * });
+ */
+
+exports.impl =
+/*#__PURE__*/
+function () {
+  function bimSelectConfigProvider() {
+    _classCallCheck(this, bimSelectConfigProvider);
+  }
+
+  _createClass(bimSelectConfigProvider, [{
+    key: "set",
+
+    /**
+     * @ngdoc method
+     * @name bimSelectConfigProvider.set
+     * @description
+     * Set global default values for these options:
+     *
+     * - `placeholder`: Must be a string.
+     * - `sorter`: Must be a function.
+     * - `itemTemplateUrl`: Must be a string.
+     * - `diacritics`: Must be a string.
+     *
+     * For details on the values, see the documentation for `bimSelect`.
+     * @param {String} option
+     *   The name of the option to set.
+     * @param {Any} value
+     *   The value for the option.
+     */
+    value: function set(option, value) {
+      if (!Object.keys(config).includes(option)) {
+        throw new Error("Invalid configuration name: ".concat(option));
+      }
+
+      switch (option) {
+        case 'sorter':
+          if (value === null || typeof value === 'function') {
+            config[option] = value;
+          } else {
+            throw new Error('The sorter value must be a function');
+          }
+
+          break;
+
+        case 'placeholder':
+          if (value === null || typeof value === 'string') {
+            config[option] = value;
+          } else {
+            throw new Error('The placeholder value must be a string');
+          }
+
+          break;
+
+        case 'diacritics':
+          if (value === null || typeof value === 'string') {
+            config[option] = value;
+          } else {
+            throw new Error('The diacritics value must be a string');
+          }
+
+          break;
+
+        case 'itemTemplateUrl':
+          if (value === null || typeof value === 'string') {
+            config[option] = value;
+          } else {
+            throw new Error('The itemTemplateUrl value must be a string');
+          }
+
+          break;
+      }
+    }
+  }, {
+    key: "$get",
+    value: function $get() {
+      return Object.freeze(Object.assign({}, config));
+    }
+  }]);
+
+  return bimSelectConfigProvider;
+}();
+
+/***/ }),
+
+/***/ "./src/bim-select-item.template.html":
+/*!*******************************************!*\
+  !*** ./src/bim-select-item.template.html ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var path = './bim.select/bim-select-item.template.html';
+var html = "<span\n    class=\"bim-select-item\"\n    title=\"{{ match.text }}\">{{ match.text }}</span>\n";
+window.angular.module('ng').run(['$templateCache', function(c) { c.put(path, html) }]);
+module.exports = path;
+
+/***/ }),
+
+/***/ "./src/bim-select.component.js":
+/*!*************************************!*\
+  !*** ./src/bim-select.component.js ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! core-js/modules/es6.regexp.split */ "./node_modules/core-js/modules/es6.regexp.split.js");
+
+__webpack_require__(/*! core-js/modules/es6.regexp.replace */ "./node_modules/core-js/modules/es6.regexp.replace.js");
+
+__webpack_require__(/*! core-js/modules/es6.array.find */ "./node_modules/core-js/modules/es6.array.find.js");
+
+// .outerWidth requires jQuery.
+__webpack_require__(/*! jquery */ "jquery");
+
+__webpack_require__(/*! ./bim-select.less */ "./src/bim-select.less");
+
+var templateUrl = __webpack_require__(/*! ./bim-select.template.html */ "./src/bim-select.template.html");
+
+var itemTemplateUrl = __webpack_require__(/*! ./bim-select-item.template.html */ "./src/bim-select-item.template.html");
+
+exports.name = 'bimSelect';
+/**
+ * A combo box/searchable dropdown list with support for millions of
+ * items. It is using a virtual scroll to handle the amount of items.
+ * It works just as fine with a smaller amount of items.
+ *
+ * Supports [`ngRequired`][ngRequired] and [`ngDisabled`][ngDisabled].
+ * Both defaults to false.
+ *
+ *   [ngRequired]: https://docs.angularjs.org/api/ng/directive/ngRequired
+ *   [ngDisabled]: https://docs.angularjs.org/api/ng/directive/ngDisabled
+ *
+ * @param {Expression<Array<?>>} items
+ *   An angular expression that evaluates to an array of items in it that
+ *   should be available to select from in the list by the user.
+ *
+ *   Each item should have a `name` property that will be used as the
+ *   text representing the item in the dropdown.
+ * @param {Expression} ngModel
+ *   Should evaluate to a property that will contain the currently
+ *   selected item in the `items` array.
+ * @param {Expression<Function>>} [onChange]
+ *   A function that will be notified when the user selects a new item
+ *   in the list. Use `selected` in the expression to get hold of the
+ *   selected item. The value of `selected` will be the value in the
+ *   `items` array that was selected by the user.
+ * @param {Expression<Function>>} [adapter]
+ *   If each object in `items` does not have a `text` and `id` property
+ *   you can use an adapter to transform each item into an object bimSelect
+ *   can work with.
+ *
+ *   This function is invoked once for each item in the `items` list and must
+ *   return an object with a `text` (string) and an `id` (string, numeric)
+ *   property.
+ * @param {Expression<String>>} [itemTemplateUrl]
+ *   If you need to specify your own template to be rendered for each match
+ *   in the list, set the url to the template here. `match` is available on
+ *   the scope and is an object with `id`, `text` and `model` property, and
+ *   the `model` property has the item in the `items` array as a value.
+ * @param {Expression<String>>} [diacritics]
+ *   If set to `'strip'` then all filtering in the dropdown will compare
+ *   items using the normalized values stripped of any diacritic marks.
+ * @param {Expression<Function>>} [sorter]
+ *   It allows the consumer to have a custom order of the matching items.
+ *
+ *   An expression evaulating to a function reference. This function will
+ *   be used as a sorter simliar to the one used when sorting with
+ *   `Array.prototype.sort`. Parameters will be `match1`, `match2`, `query`
+ *   and the return value should equal that needed for the array sorter.
+ *
+ *   E.g. if the matches beginning with the search string should be
+ *   prioritized, a custom sorter handling this could be added.
+ *
+ *   Please note: This function is only affects a filtered list.
+ *
+ * @example
+ * Simple example
+ *
+ * ```html
+ * <bim-select items="vm.items"
+ *             ng-model="vm.selected"
+ *             on-change="vm.update({ item: selected })">
+ * ```
+ *
+ * @example
+ * When using an adapter
+ *
+ * ```js
+ * vm.items = [
+ *   { age: 19, name: 'Nineteen' },
+ *   { age: 20, name: 'Twenty' }
+ * ];
+ * vm.adapter = function(item) {
+ *   // Convert to a text/id object
+ *   return {
+ *     id: item.age,
+ *     text: item.name
+ *   };
+ * }
+ * ```
+ * ```html
+ * <bim-select items="vm.items"
+ *             ng-model="vm.selected"
+ *             adapter="vm.adapter">
+ * ```
+ *
+ * @example
+ * When using an custom sorter
+ *
+ * ```js
+ * vm.items = [
+ *   { id: 1, name: 'Augustus' },
+ *   { id: 3, name: 'Caligula' }
+ * ];
+ * vm.sorter = function reverse(a, b, query) {
+ *     return -a.text.localeCompare(b.text);
+ * }
+ * ```
+ * ```html
+ * <bim-select items="vm.items"
+ *             ng-model="vm.selected"
+ *             sorter="vm.sorter">
+ * ```
+ *
+ * @example
+* Custom template where the text should be "encrypted".
+*
+* ```html
+* <script type="text/ng-template" id="item.html">
+*   <span class="bim-select-item">{{ match.text | rot13 }}</span>
+* </script>
+*
+* <bim-select items="vm.items"
+*             ng-model="vm.selected"
+*             item-template-url="'item.html'"></bim-select>
+*/
+
+exports.impl = {
+  bindings: {
+    adapter: '<',
+    diacritics: '<?',
+    itemTemplateUrl: '<?',
+    items: '<',
+    onChange: '&',
+    sorter: '<?'
+  },
+  require: {
+    model: 'ngModel'
+  },
+  templateUrl: templateUrl,
+  controller: BimSelectController
+};
+BimSelectController.$inject = ['$document', '$element', '$timeout', '$scope', '$attrs', 'bimSelectConfig'];
+
+function BimSelectController($document, $element, $timeout, $scope, $attrs, bimSelectConfig) {
+  var $ctrl = this;
+  var defaultItemTemplateUrl = itemTemplateUrl;
+  var ul = $element[0].querySelector('ul');
+  var Keys = {
+    Escape: 27,
+    Up: 38,
+    Down: 40,
+    Enter: 13
+  };
+  var currentJoinedInternalIds = null;
+  $ctrl.internalItems = [];
+  $ctrl.defaultPlaceholder = 'No selection';
+  $scope.$on('$destroy', function () {
+    $document.off('mousedown touchstart pointerdown', outsideClick);
+  }); // ANGULAR METHODS
+
+  $ctrl.$onInit = function () {
+    $ctrl.internalItemTemplateUrl = $ctrl.itemTemplateUrl || bimSelectConfig.itemTemplateUrl || defaultItemTemplateUrl;
+    renderSelection();
+    $ctrl.model.$render = renderSelection;
+
+    $ctrl.adapter = $ctrl.adapter || function (item) {
+      return {
+        text: item.text,
+        id: item.id
+      };
+    };
+
+    setWidth();
+  };
+
+  $ctrl.$doCheck = function () {
+    var adaptedItems = adaptItems();
+    var ids = adaptedItems.map(function (item) {
+      return item.id;
+    }).join('$');
+
+    if (ids !== currentJoinedInternalIds) {
+      currentJoinedInternalIds = ids;
+      $ctrl.internalItems = adaptedItems;
+      updateMatches();
+      return;
+    }
+  }; // TEMPLATE METHODS
+
+
+  $ctrl.activateHandler = function (event) {
+    event && event.stopPropagation();
+    $ctrl.inputValue = '';
+    open();
+  };
+
+  $ctrl.toggleHandler = function () {
+    if ($ctrl.active) {
+      $ctrl.close();
+    } else {
+      // For some reason the .focus below does not trigger activateHandler
+      // when running in a normal browser window, so invoke it manually.
+      $ctrl.activateHandler();
+      $element.find('input').focus();
+    }
+  };
+
+  $ctrl.close = function () {
+    $document.off('mousedown touchstart pointerdown', outsideClick);
+    $ctrl.active = false;
+    renderSelection();
+  };
+
+  $ctrl.select = function (event, match) {
+    event && event.preventDefault();
+
+    if (match.id !== 'bim-select-message') {
+      setSelection(match);
+      $ctrl.onChange({
+        selected: match.model
+      });
+      $ctrl.close();
+    }
+  };
+
+  $ctrl.clear = function () {
+    $ctrl.model.$setViewValue(null);
+    $ctrl.onChange({
+      selected: null
+    });
+    $ctrl.close();
+  };
+
+  $ctrl.keydownHandler = function (event) {
+    if (event.which === Keys.Escape) {
+      $ctrl.close();
+    }
+
+    if (event.which === Keys.Down) {
+      event.preventDefault();
+      var newIndex = Math.min($ctrl.activeIndex + 1, $ctrl.matches.length - 1);
+
+      if ($ctrl.matches[newIndex].id !== 'bim-select-message') {
+        $ctrl.activeIndex = newIndex;
+        ensureVisibleItem();
+      }
+    }
+
+    if (event.which === Keys.Up) {
+      event.preventDefault();
+
+      if ($ctrl.activeIndex > -1) {
+        $ctrl.activeIndex = Math.max($ctrl.activeIndex - 1, 0);
+        ensureVisibleItem();
+      }
+    }
+
+    if (event.which === Keys.Enter) {
+      event.preventDefault();
+
+      if ($ctrl.activeIndex >= 0) {
+        var item = $ctrl.matches[$ctrl.activeIndex];
+        $ctrl.select(null, item);
+      }
+    }
+  };
+
+  $ctrl.inputValueChangeHandler = function () {
+    updateMatches();
+    ul.scrollTop = 0;
+
+    if (!$ctrl.active) {
+      open();
+    }
+  };
+
+  $ctrl.isRequired = function () {
+    return !!$attrs.required;
+  };
+
+  $ctrl.isDisabled = function () {
+    return !!$attrs.disabled;
+  };
+
+  $ctrl.isClearable = function () {
+    return $ctrl.model.$modelValue !== undefined && $ctrl.model.$modelValue !== null && !$ctrl.isRequired();
+  };
+
+  $ctrl.placeholderText = function () {
+    return $attrs.placeholder || bimSelectConfig.placeholder || $ctrl.defaultPlaceholder;
+  }; // INTERNAL HELPERS
+
+
+  function ensureVisibleItem() {
+    $timeout(function () {
+      var li = ul.querySelector('li.active');
+
+      if (li) {
+        var itemHeight = li.clientHeight;
+        var listHeight = ul.clientHeight;
+        var offsetTop = li.offsetTop; // below viewport
+
+        if (offsetTop + itemHeight > ul.scrollTop + listHeight) {
+          ul.scrollTop = offsetTop - listHeight + 2 * itemHeight;
+        } // above viewport
+
+
+        if (offsetTop - 5 < ul.scrollTop) {
+          ul.scrollTop = offsetTop - itemHeight;
+        }
+      }
+    });
+  }
+
+  function open() {
+    if (!$ctrl.active) {
+      $ctrl.active = true;
+      $document.on('mousedown touchstart pointerdown', outsideClick);
+      updateMatches();
+      setWidth();
+      $timeout(function () {
+        // Force rerender of virtual scroll. Needed for at least IE11.
+        $scope.$broadcast('vsRepeatResize');
+      });
+    }
+  }
+
+  ;
+
+  function updateMatches() {
+    $ctrl.activeIndex = -1;
+    var query = $ctrl.inputValue || '';
+    $ctrl.matches = $ctrl.internalItems.filter(function (item) {
+      var text = normalize(item.text);
+      return text.indexOf(normalize(query)) >= 0;
+    });
+    var sorter = 'sorter' in $ctrl ? $ctrl.sorter : bimSelectConfig.sorter;
+
+    if (query && sorter) {
+      $ctrl.matches.sort(function (a, b) {
+        return sorter(a.model, b.model, query);
+      });
+    } // Workaround to expose real index for each item since
+    // vs-repeat modifies it.
+
+
+    $ctrl.matches.forEach(function (match, index) {
+      match.index = index;
+    });
+
+    if ($ctrl.inputValue && $ctrl.matches.length === 0) {
+      $ctrl.matches.push({
+        id: 'bim-select-message',
+        text: 'No matches'
+      });
+    } else if ($ctrl.internalItems.length === 0) {
+      $ctrl.matches.push({
+        id: 'bim-select-message',
+        text: 'No options'
+      });
+    }
+  }
+
+  function adaptItems() {
+    var externalItems = $ctrl.items || [];
+    return externalItems.map(function (item) {
+      var adapted = $ctrl.adapter(item);
+
+      if (typeof adapted.text !== 'string') {
+        throw new Error('Adapter did not generate an object with a valid text string property');
+      }
+
+      if (typeof adapted.id !== 'string' && typeof adapted.id !== 'number') {
+        throw new Error('Adapter did not generate an object with a valid id string or numeric property');
+      }
+
+      adapted.model = item;
+      return adapted;
+    });
+  }
+
+  function setWidth() {
+    $ctrl.width = $element.find('.input-group').outerWidth();
+  }
+
+  function setSelection(match) {
+    $ctrl.model.$setViewValue(match.model);
+  }
+
+  function renderSelection() {
+    if ($ctrl.model.$modelValue === undefined || $ctrl.model.$modelValue === null) {
+      $ctrl.inputValue = '';
+    } else {
+      $ctrl.inputValue = $ctrl.model.$modelValue && $ctrl.adapter($ctrl.model.$modelValue).text;
+    }
+  }
+
+  function outsideClick(event) {
+    var elm = event.target;
+
+    while (elm && elm !== $element[0]) {
+      elm = elm.parentNode;
+    }
+
+    if (!elm) {
+      // We hit document, and not any element within the directive
+      $scope.$apply(function () {
+        ul.scrollTop = 0;
+        $ctrl.close();
+      });
+    }
+  }
+
+  var NORMALIZE_MAP = {
+    'å': 'a',
+    'ä': 'a',
+    'é': 'e',
+    'è': 'e',
+    'ö': 'o',
+    'ø': 'o',
+    'ü': 'u'
+  };
+
+  function normalize(str) {
+    var localPresent = 'diacritics' in $ctrl;
+    var out = str.toLowerCase();
+
+    if (localPresent && $ctrl.diacritics === 'strip' || !localPresent && bimSelectConfig.diacritics === 'strip') {
+      if (out.normalize) {
+        // Most browsers
+        out = out.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      } else {
+        // IE11
+        out = out.split('').map(function (char) {
+          return NORMALIZE_MAP[char] || char;
+        }).join('');
+      }
+    }
+
+    return out;
+  }
+}
+
+;
+
+/***/ }),
+
+/***/ "./src/bim-select.less":
+/*!*****************************!*\
+  !*** ./src/bim-select.less ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../node_modules/css-loader??ref--5-1!../node_modules/less-loader/dist/cjs.js??ref--5-2!./bim-select.less */ "./node_modules/css-loader/index.js??ref--5-1!./node_modules/less-loader/dist/cjs.js??ref--5-2!./src/bim-select.less");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./src/bim-select.module.js":
+/*!**********************************!*\
+  !*** ./src/bim-select.module.js ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! core-js/modules/es6.function.name */ "./node_modules/core-js/modules/es6.function.name.js");
+
+var angular = __webpack_require__(/*! angular */ "angular");
+
+var component = __webpack_require__(/*! ./bim-select.component.js */ "./src/bim-select.component.js");
+
+var provider = __webpack_require__(/*! ./bim-select-config.provider.js */ "./src/bim-select-config.provider.js");
+
+module.exports = angular.module('bim.select', ['vs-repeat']).component(component.name, component.impl).provider(provider.name, provider.impl).name;
+
+/***/ }),
+
+/***/ "./src/bim-select.template.html":
+/*!**************************************!*\
+  !*** ./src/bim-select.template.html ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var path = './bim.select/bim-select.template.html';
+var html = "<div class=\"dropdown\" ng-class=\"{ open: $ctrl.active }\">\n    <div class=\"input-group\">\n        <input class=\"form-control\"\n               type=\"text\"\n               placeholder=\"{{ $ctrl.placeholderText() }}\"\n               ng-keydown=\"$ctrl.keydownHandler($event)\"\n               ng-click=\"$ctrl.activateHandler($event)\"\n               ng-blur=\"$ctrl.deactivateHandler($event)\"\n               ng-focus=\"$ctrl.activateHandler($event)\"\n               ng-change=\"$ctrl.inputValueChangeHandler()\"\n               ng-disabled=\"$ctrl.isDisabled()\"\n               ng-model=\"$ctrl.inputValue\">\n        <span class=\"input-group-btn\">\n            <button class=\"btn btn-default bim-select--clear\"\n                    type=\"button\"\n                    ng-click=\"$ctrl.clear()\"\n                    ng-disabled=\"$ctrl.isDisabled()\"\n                    ng-if=\"$ctrl.isClearable() && !$ctrl.isDisabled()\">\n                <span class=\"fa fa-remove\"></span>\n            </button>\n            <button class=\"btn btn-default bim-select--toggle\"\n                    type=\"button\"\n                    ng-disabled=\"$ctrl.isDisabled()\"\n                    ng-click=\"$ctrl.toggleHandler()\">\n                <span class=\"fa fa-caret-down\"></span>\n            </button>\n        </span>\n    </div>\n    <ul class=\"bim-select-dropdown dropdown-menu\"\n        vs-repeat\n        role=\"listbox\"\n        ng-style=\"{ width: $ctrl.width }\">\n        <li role=\"option\"\n            ng-repeat=\"match in $ctrl.matches track by match.id\"\n            ng-click=\"$ctrl.select($event, match)\"\n            ng-class=\"{ active: match.index === $ctrl.activeIndex }\">\n            <ng-include src=\"$ctrl.internalItemTemplateUrl\"></ng-include>\n        </li>\n    </ul>\n</div>\n";
+window.angular.module('ng').run(['$templateCache', function(c) { c.put(path, html) }]);
+module.exports = path;
+
+/***/ }),
+
+/***/ "angular":
+/*!**************************!*\
+  !*** external "angular" ***!
+  \**************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = angular;
+
+/***/ }),
+
+/***/ "jquery":
+/*!*************************!*\
+  !*** external "jQuery" ***!
+  \*************************/
+/*! no static exports found */
 /***/ (function(module, exports) {
 
 module.exports = jQuery;
 
 /***/ })
-/******/ ]);
+
+/******/ });
 //# sourceMappingURL=bim-select.js.map

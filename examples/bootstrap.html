@@ -10,7 +10,13 @@
 <body ng-controller="ExampleController as vm">
     <div class="container">
         <h1>Examples</h1>
-        <h2>Using bootstrap</h2>
+
+        <h2>Handle many items</h2>
+
+        <bim-select items="vm.long" ng-model="vm.longItem"></bim-select>
+        <p>Selected value: <span ng-bind="vm.longItem | json"></span></p>
+
+        <h2>Disabled state</h2>
 
         <bim-select items="vm.countries"
                     adapter="vm.countryAdapter"
@@ -51,6 +57,7 @@
                     adapter="vm.countryAdapter"
                     sorter="vm.reverseCountrySorter"></bim-select>
         <p>Selected value: <span ng-bind="vm.sortedValue | json"></span></p>
+
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -98,6 +105,12 @@
                     id: String(item.id),
                     text: item.text
                 };
+            }
+
+            // LONG LIST
+            this.long = [];
+            for (var i=1;i<=10000;i++) {
+                this.long.push({ id: i, text: 'Item ' + i });
             }
         })
     </script>

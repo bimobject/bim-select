@@ -1,0 +1,20 @@
+# Support Extended Support Release of Firefox.
+Firefox ESR
+
+# Nice release cycles with auto update.
+last 2 Chrome versions
+
+# Normally matches chrome features.
+last 2 Opera versions
+
+# Minor releases happen seldom, and sometimes with
+# "major" macOS releases. So 1 major is prob good
+# enough.
+last 1 Safari major version
+
+# Again, nice release cycle, even though it is slow.
+last 2 Edge versions
+
+# Only IE 11. sorry.
+IE >= 11
+

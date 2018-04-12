@@ -4,8 +4,7 @@ const path = require('path');
 module.exports = {
     entry: path.resolve(__dirname, './src/bim-select.module.js'),
     output: {
-        path: path.resolve(__dirname, './dist'),
-        filename: 'bim-select.js'
+        devtoolModuleFilenameTemplate: 'bs:///[resource-path]?[loaders]'
     },
     devtool: 'source-map',
     externals: {

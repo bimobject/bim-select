@@ -15,7 +15,7 @@ let browsers = CI
         ? BROWSERS
         : HEADLESS;
 
-const webpackConfig = require('./webpack.config.js');
+const webpackConfig = require('./webpack.dev.js');
 // Do not assume someone else loaded deps in the tests.
 // We load them explicitly.
 delete webpackConfig.externals;
