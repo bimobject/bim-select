@@ -94,6 +94,23 @@ describe('bimSelectConfig', function() {
             expect(run).to.not.throw();
         });
     });
+    describe('option selectedItemTemplateUrl', function () {
+        it('is exposed when set', function() {
+            expectExposure('selectedItemTemplateUrl', '/thing.html');
+        });
+        it('requires a string', function() {
+            load(provider => {
+                provider.set('selectedItemTemplateUrl', () => {});
+            });
+            expect(run).to.throw(/string/);
+        });
+        it('is nullable', function() {
+            load(provider => {
+                provider.set('selectedItemTemplateUrl', null);
+            });
+            expect(run).to.not.throw();
+        });
+    });
 
     const expectExposure = (option, value) => {
         load(provider => {

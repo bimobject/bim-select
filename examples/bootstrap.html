@@ -26,6 +26,22 @@
         <input type="checkbox" id="dis" ng-model="vm.disabled">
         <label for="dis">Simulate disabled state</label>
 
+        <h2>Item template</h2>
+
+        <bim-select items="vm.countries"
+                    item-template-url="'/bim-select-item.template.html'"
+                    adapter="vm.countryAdapter"
+                    ng-model="vm.countryItemTemplateValue"
+          ></bim-select>
+
+          <h2>Selected Item template</h2>
+
+          <bim-select items="vm.countries"
+                      item-template-url="'/bim-select-item.template.html'"
+                      selected-item-template-url="'/bim-select-selected-item.template.html'"
+                      adapter="vm.countryAdapter"
+                      ng-model="vm.countrySelectedItemTemplateValue"
+          ></bim-select>
 
         <h2>Using null value</h2>
 
@@ -71,12 +87,14 @@
         .controller('ExampleController', function() {
             // COUNTRIES
             this.countries = [
-                { name: 'Denmark', code: 'dk' },
-                { name: 'Sweden', code: 'sv' },
-                { name: 'Finland', code: 'fi' },
-                { name: 'Norway', code: 'no' },
-            ]
+                { name: 'Denmark', code: 'dk', prefixCode: true },
+                { name: 'Sweden', code: 'sv', prefixCode: false },
+                { name: 'Finland', code: 'fi', prefixCode: false},
+                { name: 'Norway', code: 'no', prefixCode: true},
+            ];
             this.countryValue = this.countries[1];
+            this.countryItemTemplateValue = this.countries[3];
+            this.countrySelectedItemTemplateValue = this.countries[3];
             this.countryAdapter = function(item) {
                 return {
                     text: item.name,

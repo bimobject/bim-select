@@ -1814,7 +1814,7 @@ exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/li
 
 
 // module
-exports.push([module.i, "bim-select {\n  display: block;\n}\nbim-select .bim-select-dropdown {\n  max-height: 300px;\n  overflow: auto;\n}\nbim-select .bim-select-dropdown .active {\n  background: #337ab7;\n  color: white;\n}\nbim-select .bim-select-item {\n  display: block;\n  padding: 3px 20px;\n  line-height: 1.42857143;\n  cursor: pointer;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n", "", {"version":3,"sources":["C:/Development/bim-select/src/C:/Development/bim-select/src/bim-select.less","C:/Development/bim-select/src/bim-select.less"],"names":[],"mappings":"AAAA;EACI,eAAA;CCCH;ADFD;EAIQ,kBAAA;EACA,eAAA;CCCP;ADND;EAUY,oBAAA;EACA,aAAA;CCDX;ADVD;EAiBQ,eAAA;EACA,kBAAA;EACA,wBAAA;EACA,gBAAA;EACA,oBAAA;EACA,iBAAA;EACA,wBAAA;CCJP","file":"bim-select.less","sourcesContent":["bim-select {\n    display: block;\n\n    .bim-select-dropdown {\n        max-height: 300px;\n        overflow: auto;\n\n        .active {\n            // color taken from @dropdown-link-active-*\n            // See: https://git.io/vS8pF\n            background: #337ab7;\n            color: white;\n        }\n    }\n    .bim-select-item {\n        // Padding etc is tken from:\n        // https://git.io/vS8hv\n        display: block;\n        padding: 3px 20px;\n        line-height: 1.42857143;\n        cursor: pointer;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n    }\n}\n","bim-select {\n  display: block;\n}\nbim-select .bim-select-dropdown {\n  max-height: 300px;\n  overflow: auto;\n}\nbim-select .bim-select-dropdown .active {\n  background: #337ab7;\n  color: white;\n}\nbim-select .bim-select-item {\n  display: block;\n  padding: 3px 20px;\n  line-height: 1.42857143;\n  cursor: pointer;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n"],"sourceRoot":""}]);
+exports.push([module.i, "bim-select {\n  display: block;\n}\nbim-select .bim-select-input {\n  opacity: 0 !important;\n  border-top-left-radius: 4px !important;\n  border-bottom-left-radius: 4px !important;\n}\nbim-select .bim-select-input.is-displayed {\n  opacity: 1 !important;\n}\nbim-select .bim-select-dropdown {\n  max-height: 300px;\n  overflow: auto;\n}\nbim-select .bim-select-dropdown .active {\n  background: #337ab7;\n  color: white;\n}\nbim-select .bim-select-item {\n  display: block;\n  padding: 3px 12px;\n  line-height: 1.42857143;\n  cursor: pointer;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\nbim-select .bim-select-selected-item {\n  padding: 0;\n  display: flex !important;\n  align-items: center;\n  overflow: hidden;\n  position: absolute !important;\n  border-radius: 4px !important;\n}\n", "", {"version":3,"sources":["/Users/eric/work/bim-select/src/bim-select.less","/Users/eric/work/bim-select/src/bim-select.less"],"names":[],"mappings":"AAAA;EACI,eAAA;CCCH;ADFD;EAGQ,sBAAA;EACA,uCAAA;EACA,0CAAA;CCEP;ADDO;EACI,sBAAA;CCGX;ADVD;EAWQ,kBAAA;EACA,eAAA;CCEP;ADdD;EAiBY,oBAAA;EACA,aAAA;CCAX;ADlBD;EAwBQ,eAAA;EACA,kBAAA;EACA,wBAAA;EACA,gBAAA;EACA,oBAAA;EACA,iBAAA;EACA,wBAAA;CCHP;AD3BD;EAiCQ,WAAA;EACA,yBAAA;EACA,oBAAA;EACA,iBAAA;EACA,8BAAA;EACA,8BAAA;CCHP","file":"bim-select.less","sourcesContent":["bim-select {\n    display: block;\n    .bim-select-input {\n        opacity: 0 !important;\n        border-top-left-radius: 4px !important; // Needs !important to override Bootstrap styles.\n        border-bottom-left-radius: 4px !important; // Needs !important to override Bootstrap styles.\n        &.is-displayed {\n            opacity: 1 !important;\n        }\n    }\n    .bim-select-dropdown {\n        max-height: 300px;\n        overflow: auto;\n\n        .active {\n            // color taken from @dropdown-link-active-*\n            // See: https://git.io/vS8pF\n            background: #337ab7;\n            color: white;\n        }\n    }\n    .bim-select-item {\n        // Padding etc is tken from:\n        // https://git.io/vS8hv\n        display: block;\n        padding: 3px 12px;\n        line-height: 1.42857143;\n        cursor: pointer;\n        white-space: nowrap;\n        overflow: hidden;\n        text-overflow: ellipsis;\n    }\n    .bim-select-selected-item {\n        padding: 0;\n        display: flex !important;\n        align-items: center;\n        overflow: hidden;\n        position: absolute !important;\n        border-radius: 4px !important;\n    }\n}\n","bim-select {\n  display: block;\n}\nbim-select .bim-select-input {\n  opacity: 0 !important;\n  border-top-left-radius: 4px !important;\n  border-bottom-left-radius: 4px !important;\n}\nbim-select .bim-select-input.is-displayed {\n  opacity: 1 !important;\n}\nbim-select .bim-select-dropdown {\n  max-height: 300px;\n  overflow: auto;\n}\nbim-select .bim-select-dropdown .active {\n  background: #337ab7;\n  color: white;\n}\nbim-select .bim-select-item {\n  display: block;\n  padding: 3px 12px;\n  line-height: 1.42857143;\n  cursor: pointer;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\nbim-select .bim-select-selected-item {\n  padding: 0;\n  display: flex !important;\n  align-items: center;\n  overflow: hidden;\n  position: absolute !important;\n  border-radius: 4px !important;\n}\n"],"sourceRoot":""}]);
 
 // exports
 
@@ -2434,7 +2434,8 @@ var config = {
   diacritics: null,
   itemTemplateUrl: null,
   placeholder: null,
-  sorter: null
+  sorter: null,
+  selectedItemTemplateUrl: null
 };
 /**
  * @ngdoc provider
@@ -2471,6 +2472,7 @@ function () {
      * - `sorter`: Must be a function.
      * - `itemTemplateUrl`: Must be a string.
      * - `diacritics`: Must be a string.
+     * - `selectedItemTemplateUrl`: Must be a string.
      *
      * For details on the values, see the documentation for `bimSelect`.
      * @param {String} option
@@ -2519,6 +2521,15 @@ function () {
           }
 
           break;
+
+        case 'selectedItemTemplateUrl':
+          if (value === null || typeof value === 'string') {
+            config[option] = value;
+          } else {
+            throw new Error('The selectedItemTemplateUrl value must be a string');
+          }
+
+          break;
       }
     }
   }, {
@@ -2541,7 +2552,7 @@ function () {
 /***/ (function(module, exports) {
 
 var path = './bim.select/bim-select-item.template.html';
-var html = "<span\n    class=\"bim-select-item\"\n    title=\"{{ match.text }}\">{{ match.text }}</span>\n";
+var html = "<span\n    class=\"bim-select-item\"\n    title=\"{{ item.text }}\">{{ item.text }}</span>\n";
 window.angular.module('ng').run(['$templateCache', function(c) { c.put(path, html) }]);
 module.exports = path;
 
@@ -2574,6 +2585,7 @@ var templateUrl = __webpack_require__(/*! ./bim-select.template.html */ "./src/b
 
 var itemTemplateUrl = __webpack_require__(/*! ./bim-select-item.template.html */ "./src/bim-select-item.template.html");
 
+var selectedItemTemplateUrl = itemTemplateUrl;
 exports.name = 'bimSelect';
 /**
  * A combo box/searchable dropdown list with support for millions of
@@ -2610,7 +2622,7 @@ exports.name = 'bimSelect';
  *   property.
  * @param {Expression<String>>} [itemTemplateUrl]
  *   If you need to specify your own template to be rendered for each match
- *   in the list, set the url to the template here. `match` is available on
+ *   in the list, set the url to the template here. `item` is available on
  *   the scope and is an object with `id`, `text` and `model` property, and
  *   the `model` property has the item in the `items` array as a value.
  * @param {Expression<String>>} [diacritics]
@@ -2628,6 +2640,13 @@ exports.name = 'bimSelect';
  *   prioritized, a custom sorter handling this could be added.
  *
  *   Please note: This function is only affects a filtered list.
+ * @param {Expression<String>>} [selectedItemTemplateUrl]
+ *   The selected item template is rendered in place of the input when the input
+ *   is not focused. This allows you to render html inside a 'fake' input.
+ *   For instance, if you want to render an icon beside the text of the selected
+ *   dropdown item you can do so by using your own custom template. `item` is
+ *   available on the scope and it is an object with `id`, `text` and `model` property,
+ *   and the `model` property has the item in the `items` array as a value.
  *
  * @example
  * Simple example
@@ -2683,7 +2702,7 @@ exports.name = 'bimSelect';
 *
 * ```html
 * <script type="text/ng-template" id="item.html">
-*   <span class="bim-select-item">{{ match.text | rot13 }}</span>
+*   <span class="bim-select-item">{{ item.text | rot13 }}</span>
 * </script>
 *
 * <bim-select items="vm.items"
@@ -2698,6 +2717,7 @@ exports.impl = {
     itemTemplateUrl: '<?',
     items: '<',
     onChange: '&',
+    selectedItemTemplateUrl: '<?',
     sorter: '<?'
   },
   require: {
@@ -2711,7 +2731,9 @@ BimSelectController.$inject = ['$document', '$element', '$timeout', '$scope', '$
 function BimSelectController($document, $element, $timeout, $scope, $attrs, bimSelectConfig) {
   var $ctrl = this;
   var defaultItemTemplateUrl = itemTemplateUrl;
+  var defaultSelectedItemTemplateUrl = selectedItemTemplateUrl;
   var ul = $element[0].querySelector('ul');
+  var isFocused = false;
   var Keys = {
     Escape: 27,
     Up: 38,
@@ -2727,6 +2749,7 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs, bimS
 
   $ctrl.$onInit = function () {
     $ctrl.internalItemTemplateUrl = $ctrl.itemTemplateUrl || bimSelectConfig.itemTemplateUrl || defaultItemTemplateUrl;
+    $ctrl.internalSelectedItemTemplateUrl = $ctrl.selectedItemTemplateUrl || bimSelectConfig.selectedItemTemplateUrl || $ctrl.itemTemplateUrl || bimSelectConfig.itemTemplateUrl || defaultSelectedItemTemplateUrl;
     renderSelection();
     $ctrl.model.$render = renderSelection;
 
@@ -2757,7 +2780,21 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs, bimS
   $ctrl.activateHandler = function (event) {
     event && event.stopPropagation();
     $ctrl.inputValue = '';
+    isFocused = true;
+    /*
+    * Fixes delayed selected item change glitch.
+    * If the `item` scope is not set to null when
+    * bim-select is opened the old value for the selected
+    * item will be shown for a few milliseconds when the
+    * user selects a new item from the dropdown.
+    */
+
+    setSelected(null);
     open();
+  };
+
+  $ctrl.deactivateHandler = function (event) {
+    isFocused = false;
   };
 
   $ctrl.toggleHandler = function () {
@@ -2795,6 +2832,7 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs, bimS
       selected: null
     });
     $ctrl.close();
+    setSelected(null);
   };
 
   $ctrl.keydownHandler = function (event) {
@@ -2854,6 +2892,12 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs, bimS
 
   $ctrl.placeholderText = function () {
     return $attrs.placeholder || bimSelectConfig.placeholder || $ctrl.defaultPlaceholder;
+  };
+
+  $ctrl.shouldDisplayInput = function () {
+    var isDisabled = $ctrl.isDisabled();
+    var modelIsFalsy = !$ctrl.model.$modelValue;
+    return modelIsFalsy || isFocused && !isDisabled;
   }; // INTERNAL HELPERS
 
 
@@ -2927,22 +2971,24 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs, bimS
     }
   }
 
+  function adaptItem(item) {
+    var adapted = $ctrl.adapter(item);
+
+    if (typeof adapted.text !== 'string') {
+      throw new Error('Adapter did not generate an object with a valid text string property');
+    }
+
+    if (typeof adapted.id !== 'string' && typeof adapted.id !== 'number') {
+      throw new Error('Adapter did not generate an object with a valid id string or numeric property');
+    }
+
+    adapted.model = item;
+    return adapted;
+  }
+
   function adaptItems() {
     var externalItems = $ctrl.items || [];
-    return externalItems.map(function (item) {
-      var adapted = $ctrl.adapter(item);
-
-      if (typeof adapted.text !== 'string') {
-        throw new Error('Adapter did not generate an object with a valid text string property');
-      }
-
-      if (typeof adapted.id !== 'string' && typeof adapted.id !== 'number') {
-        throw new Error('Adapter did not generate an object with a valid id string or numeric property');
-      }
-
-      adapted.model = item;
-      return adapted;
-    });
+    return externalItems.map(adaptItem);
   }
 
   function setWidth() {
@@ -2957,6 +3003,7 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs, bimS
     if ($ctrl.model.$modelValue === undefined || $ctrl.model.$modelValue === null) {
       $ctrl.inputValue = '';
     } else {
+      $ctrl.model.$modelValue && setSelected(adaptItem($ctrl.model.$modelValue));
       $ctrl.inputValue = $ctrl.model.$modelValue && $ctrl.adapter($ctrl.model.$modelValue).text;
     }
   }
@@ -2980,6 +3027,7 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs, bimS
   var NORMALIZE_MAP = {
     'å': 'a',
     'ä': 'a',
+    'ë': 'e',
     'é': 'e',
     'è': 'e',
     'ö': 'o',
@@ -3004,6 +3052,10 @@ function BimSelectController($document, $element, $timeout, $scope, $attrs, bimS
     }
 
     return out;
+  }
+
+  function setSelected(item) {
+    $scope.item = item;
   }
 }
 
@@ -3071,7 +3123,7 @@ module.exports = angular.module('bim.select', ['vs-repeat']).component(component
 /***/ (function(module, exports) {
 
 var path = './bim.select/bim-select.template.html';
-var html = "<div class=\"dropdown\" ng-class=\"{ open: $ctrl.active }\">\n    <div class=\"input-group\">\n        <input class=\"form-control\"\n               type=\"text\"\n               placeholder=\"{{ $ctrl.placeholderText() }}\"\n               ng-keydown=\"$ctrl.keydownHandler($event)\"\n               ng-click=\"$ctrl.activateHandler($event)\"\n               ng-blur=\"$ctrl.deactivateHandler($event)\"\n               ng-focus=\"$ctrl.activateHandler($event)\"\n               ng-change=\"$ctrl.inputValueChangeHandler()\"\n               ng-disabled=\"$ctrl.isDisabled()\"\n               ng-model=\"$ctrl.inputValue\">\n        <span class=\"input-group-btn\">\n            <button class=\"btn btn-default bim-select--clear\"\n                    type=\"button\"\n                    ng-click=\"$ctrl.clear()\"\n                    ng-disabled=\"$ctrl.isDisabled()\"\n                    ng-if=\"$ctrl.isClearable() && !$ctrl.isDisabled()\">\n                <span class=\"fa fa-remove\"></span>\n            </button>\n            <button class=\"btn btn-default bim-select--toggle\"\n                    type=\"button\"\n                    ng-disabled=\"$ctrl.isDisabled()\"\n                    ng-click=\"$ctrl.toggleHandler()\">\n                <span class=\"fa fa-caret-down\"></span>\n            </button>\n        </span>\n    </div>\n    <ul class=\"bim-select-dropdown dropdown-menu\"\n        vs-repeat\n        role=\"listbox\"\n        ng-style=\"{ width: $ctrl.width }\">\n        <li role=\"option\"\n            ng-repeat=\"match in $ctrl.matches track by match.id\"\n            ng-click=\"$ctrl.select($event, match)\"\n            ng-class=\"{ active: match.index === $ctrl.activeIndex }\">\n            <ng-include src=\"$ctrl.internalItemTemplateUrl\"></ng-include>\n        </li>\n    </ul>\n</div>\n";
+var html = "<div class=\"dropdown\" ng-class=\"{ open: $ctrl.active }\">\n    <div class=\"input-group\">\n        <span ng-if=\"!$ctrl.shouldDisplayInput()\" \n              class=\"bim-select-selected-item form-control\"\n              ng-disabled=\"$ctrl.isDisabled()\">\n            <ng-include src=\"$ctrl.internalSelectedItemTemplateUrl\"></ng-include>\n        </span>\n        <input class=\"bim-select-input form-control\"\n               ng-class=\"{\n                   'is-displayed': $ctrl.shouldDisplayInput()\n               }\"\n               type=\"text\"\n               placeholder=\"{{ $ctrl.placeholderText() }}\"\n               ng-keydown=\"$ctrl.keydownHandler($event)\"\n               ng-click=\"$ctrl.activateHandler($event)\"\n               ng-blur=\"$ctrl.deactivateHandler($event)\"\n               ng-focus=\"$ctrl.activateHandler($event)\"\n               ng-change=\"$ctrl.inputValueChangeHandler()\"\n               ng-disabled=\"$ctrl.isDisabled()\"\n               ng-model=\"$ctrl.inputValue\">\n        <span class=\"input-group-btn\">\n            <button class=\"btn btn-default bim-select--clear\"\n                    type=\"button\"\n                    ng-click=\"$ctrl.clear()\"\n                    ng-disabled=\"$ctrl.isDisabled()\"\n                    ng-if=\"$ctrl.isClearable() && !$ctrl.isDisabled()\">\n                <span class=\"fa fa-remove\"></span>\n            </button>\n            <button class=\"btn btn-default bim-select--toggle\"\n                    type=\"button\"\n                    ng-disabled=\"$ctrl.isDisabled()\"\n                    ng-click=\"$ctrl.toggleHandler()\">\n                <span class=\"fa fa-caret-down\"></span>\n            </button>\n        </span>\n    </div>\n    <ul class=\"bim-select-dropdown dropdown-menu\"\n        vs-repeat\n        role=\"listbox\"\n        ng-style=\"{ width: $ctrl.width }\">\n        <li role=\"option\"\n            ng-repeat=\"item in $ctrl.matches track by item.id\"\n            ng-click=\"$ctrl.select($event, item)\"\n            ng-class=\"{ active: item.index === $ctrl.activeIndex }\">\n            <ng-include src=\"$ctrl.internalItemTemplateUrl\"></ng-include>\n        </li>\n    </ul>\n</div>\n";
 window.angular.module('ng').run(['$templateCache', function(c) { c.put(path, html) }]);
 module.exports = path;
 

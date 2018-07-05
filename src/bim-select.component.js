@@ -5,6 +5,7 @@ require('./bim-select.less');
 
 const templateUrl = require('./bim-select.template.html');
 const itemTemplateUrl = require('./bim-select-item.template.html');
+const selectedItemTemplateUrl = itemTemplateUrl;
 
 exports.name = 'bimSelect';
 
@@ -43,7 +44,7 @@ exports.name = 'bimSelect';
  *   property.
  * @param {Expression<String>>} [itemTemplateUrl]
  *   If you need to specify your own template to be rendered for each match
- *   in the list, set the url to the template here. `match` is available on
+ *   in the list, set the url to the template here. `item` is available on
  *   the scope and is an object with `id`, `text` and `model` property, and
  *   the `model` property has the item in the `items` array as a value.
  * @param {Expression<String>>} [diacritics]
@@ -61,6 +62,13 @@ exports.name = 'bimSelect';
  *   prioritized, a custom sorter handling this could be added.
  *
  *   Please note: This function is only affects a filtered list.
+ * @param {Expression<String>>} [selectedItemTemplateUrl]
+ *   The selected item template is rendered in place of the input when the input
+ *   is not focused. This allows you to render html inside a 'fake' input.
+ *   For instance, if you want to render an icon beside the text of the selected
+ *   dropdown item you can do so by using your own custom template. `item` is
+ *   available on the scope and it is an object with `id`, `text` and `model` property,
+ *   and the `model` property has the item in the `items` array as a value.
  *
  * @example
  * Simple example
@@ -116,7 +124,7 @@ exports.name = 'bimSelect';
 *
 * ```html
 * <script type="text/ng-template" id="item.html">
-*   <span class="bim-select-item">{{ match.text | rot13 }}</span>
+*   <span class="bim-select-item">{{ item.text | rot13 }}</span>
 * </script>
 *
 * <bim-select items="vm.items"
@@ -130,6 +138,7 @@ exports.impl = {
         itemTemplateUrl: '<?',
         items: '<',
         onChange: '&',
+        selectedItemTemplateUrl: '<?',
         sorter: '<?'
     },
     require: {
@@ -158,7 +167,9 @@ function BimSelectController(
 ) {
     const $ctrl = this;
     const defaultItemTemplateUrl = itemTemplateUrl;
+    const defaultSelectedItemTemplateUrl = selectedItemTemplateUrl;
     const ul = $element[0].querySelector('ul');
+    let isFocused = false;
 
     const Keys = {
         Escape: 27,
@@ -182,6 +193,11 @@ function BimSelectController(
         $ctrl.internalItemTemplateUrl = $ctrl.itemTemplateUrl ||
             bimSelectConfig.itemTemplateUrl ||
             defaultItemTemplateUrl;
+        $ctrl.internalSelectedItemTemplateUrl = $ctrl.selectedItemTemplateUrl ||
+            bimSelectConfig.selectedItemTemplateUrl ||
+            $ctrl.itemTemplateUrl ||
+            bimSelectConfig.itemTemplateUrl ||
+            defaultSelectedItemTemplateUrl;
         renderSelection();
         $ctrl.model.$render = renderSelection;
         $ctrl.adapter = $ctrl.adapter || function(item) {
@@ -209,8 +225,21 @@ function BimSelectController(
     $ctrl.activateHandler = function(event) {
         event && event.stopPropagation();
         $ctrl.inputValue = '';
+        isFocused = true;
+        /*
+        * Fixes delayed selected item change glitch.
+        * If the `item` scope is not set to null when
+        * bim-select is opened the old value for the selected
+        * item will be shown for a few milliseconds when the
+        * user selects a new item from the dropdown.
+        */
+        setSelected(null);
 
         open();
+    };
+
+    $ctrl.deactivateHandler = function(event) {
+        isFocused = false;
     };
 
     $ctrl.toggleHandler = function() {
@@ -243,6 +272,7 @@ function BimSelectController(
         $ctrl.model.$setViewValue(null);
         $ctrl.onChange({ selected: null });
         $ctrl.close();
+        setSelected(null);
     };
 
     $ctrl.keydownHandler = function(event) {
@@ -302,6 +332,12 @@ function BimSelectController(
     };
 
     $ctrl.placeholderText = () => $attrs.placeholder || bimSelectConfig.placeholder || $ctrl.defaultPlaceholder;
+
+    $ctrl.shouldDisplayInput = function() {
+        const isDisabled = $ctrl.isDisabled();
+        const modelIsFalsy = !$ctrl.model.$modelValue;
+        return modelIsFalsy || ((isFocused) && !isDisabled);
+    };
 
     // INTERNAL HELPERS
 
@@ -373,19 +409,21 @@ function BimSelectController(
         }
     }
 
+    function adaptItem(item) {
+        const adapted = $ctrl.adapter(item);
+        if (typeof adapted.text !== 'string') {
+            throw new Error('Adapter did not generate an object with a valid text string property');
+        }
+        if (typeof adapted.id !== 'string' && typeof adapted.id !== 'number') {
+            throw new Error('Adapter did not generate an object with a valid id string or numeric property');
+        }
+        adapted.model = item;
+        return adapted;
+    }
+
     function adaptItems() {
         const externalItems = $ctrl.items || [];
-        return externalItems.map(function(item) {
-            const adapted = $ctrl.adapter(item);
-            if (typeof adapted.text !== 'string') {
-                throw new Error('Adapter did not generate an object with a valid text string property');
-            }
-            if (typeof adapted.id !== 'string' && typeof adapted.id !== 'number') {
-                throw new Error('Adapter did not generate an object with a valid id string or numeric property');
-            }
-            adapted.model = item;
-            return adapted;
-        });
+        return externalItems.map(adaptItem);
     }
 
     function setWidth() {
@@ -400,6 +438,7 @@ function BimSelectController(
         if ($ctrl.model.$modelValue === undefined || $ctrl.model.$modelValue === null) {
             $ctrl.inputValue = '';
         } else {
+            $ctrl.model.$modelValue && setSelected(adaptItem($ctrl.model.$modelValue));
             $ctrl.inputValue = $ctrl.model.$modelValue && $ctrl.adapter($ctrl.model.$modelValue).text;
         }
     }
@@ -447,5 +486,9 @@ function BimSelectController(
         }
 
         return out;
+    }
+
+    function setSelected(item) {
+        $scope.item = item;
     }
 };

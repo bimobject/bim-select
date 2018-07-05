@@ -1,6 +1,13 @@
 bim-select {
     display: block;
-
+    .bim-select-input {
+        opacity: 0 !important;
+        border-top-left-radius: 4px !important; // Needs !important to override Bootstrap styles.
+        border-bottom-left-radius: 4px !important; // Needs !important to override Bootstrap styles.
+        &.is-displayed {
+            opacity: 1 !important;
+        }
+    }
     .bim-select-dropdown {
         max-height: 300px;
         overflow: auto;
@@ -16,11 +23,19 @@ bim-select {
         // Padding etc is tken from:
         // https://git.io/vS8hv
         display: block;
-        padding: 3px 20px;
+        padding: 3px 12px;
         line-height: 1.42857143;
         cursor: pointer;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+    .bim-select-selected-item {
+        padding: 0;
+        display: flex !important;
+        align-items: center;
+        overflow: hidden;
+        position: absolute !important;
+        border-radius: 4px !important;
     }
 }

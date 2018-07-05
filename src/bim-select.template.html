@@ -1,6 +1,14 @@
 <div class="dropdown" ng-class="{ open: $ctrl.active }">
     <div class="input-group">
-        <input class="form-control"
+        <span ng-if="!$ctrl.shouldDisplayInput()" 
+              class="bim-select-selected-item form-control"
+              ng-disabled="$ctrl.isDisabled()">
+            <ng-include src="$ctrl.internalSelectedItemTemplateUrl"></ng-include>
+        </span>
+        <input class="bim-select-input form-control"
+               ng-class="{
+                   'is-displayed': $ctrl.shouldDisplayInput()
+               }"
                type="text"
                placeholder="{{ $ctrl.placeholderText() }}"
                ng-keydown="$ctrl.keydownHandler($event)"
@@ -31,9 +39,9 @@
         role="listbox"
         ng-style="{ width: $ctrl.width }">
         <li role="option"
-            ng-repeat="match in $ctrl.matches track by match.id"
-            ng-click="$ctrl.select($event, match)"
-            ng-class="{ active: match.index === $ctrl.activeIndex }">
+            ng-repeat="item in $ctrl.matches track by item.id"
+            ng-click="$ctrl.select($event, item)"
+            ng-class="{ active: item.index === $ctrl.activeIndex }">
             <ng-include src="$ctrl.internalItemTemplateUrl"></ng-include>
         </li>
     </ul>
