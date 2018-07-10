@@ -201,7 +201,6 @@ function BimSelectController(
             currentJoinedInternalIds = ids;
             $ctrl.internalItems = adaptedItems;
             updateMatches();
-            return;
         }
     };
 
@@ -434,7 +433,7 @@ function BimSelectController(
         const localPresent = 'diacritics' in $ctrl;
         let out = str.toLowerCase();
 
-        if (localPresent && $ctrl.diacritics === 'strip' || !localPresent && bimSelectConfig.diacritics === 'strip') {
+        if ((localPresent && $ctrl.diacritics === 'strip') || (!localPresent && bimSelectConfig.diacritics === 'strip')) {
             if (out.normalize) {
                 // Most browsers
                 out = out.normalize('NFD').replace(/[\u0300-\u036f]/g, '');

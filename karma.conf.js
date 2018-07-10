@@ -30,6 +30,11 @@ webpackConfig.module.rules.unshift({
     use: { loader: 'istanbul-instrumenter-loader' },
     include: path.resolve('src')
 });
+// https://github.com/vuejs-templates/webpack/issues/646#issuecomment-329324092
+webpackConfig.module.rules.unshift({
+    test: require.resolve('chai-as-promised'),
+    use: 'babel-loader'
+});
 
 const getReporters = () => {
     const reps = [];
@@ -55,6 +60,7 @@ module.exports = function(config) {
         frameworks: ['mocha', 'chai-dom', 'chai-as-promised', 'sinon-chai', 'chai'],
         files: [testFile],
         preprocessors: {
+            [require.resolve('chai-as-promised')]: ['webpack'],
             [testFile]: ['webpack']
         },
 
