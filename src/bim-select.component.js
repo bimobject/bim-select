@@ -422,6 +422,7 @@ function BimSelectController(
     var NORMALIZE_MAP = {
         'å': 'a',
         'ä': 'a',
+        'ë': 'e',
         'é': 'e',
         'è': 'e',
         'ö': 'o',
