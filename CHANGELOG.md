@@ -1,3 +1,29 @@
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/bimobject/bim-select/compare/v2.3.1...v3.0.0) (2018-07-11)
+
+
+### Bug Fixes
+
+* **diacritics:** Fix failing test with diacritical marks in IE11 ([036e17d](https://github.com/bimobject/bim-select/commit/036e17d))
+* **ie:** Downgrade chai-as-promised ([036630b](https://github.com/bimobject/bim-select/commit/036630b))
+
+
+### Features
+
+* **selected item template:** introduces a template for the selected item. ([5534ba9](https://github.com/bimobject/bim-select/commit/5534ba9))
+
+
+### BREAKING CHANGES
+
+* **selected item template:** the template variable `match` in the bim-select-item
+template has changed to `item`. This was done so that the bim-select-item
+template can be reused for the bim-select-selected-item template where
+the variable name `match` does not really make sense since the selected item
+is no longer a match but rather is the selected item after the match item was
+selected.
+
+
+
 <a name="2.3.1"></a>
 ## [2.3.1](https://github.com/bimobject/bim-select/compare/v2.3.0...v2.3.1) (2018-04-12)
 
