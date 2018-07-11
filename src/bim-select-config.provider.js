@@ -4,7 +4,8 @@ const config = {
     diacritics: null,
     itemTemplateUrl: null,
     placeholder: null,
-    sorter: null
+    sorter: null,
+    selectedItemTemplateUrl: null
 };
 
 /**
@@ -32,6 +33,7 @@ exports.impl = class bimSelectConfigProvider {
      * - `sorter`: Must be a function.
      * - `itemTemplateUrl`: Must be a string.
      * - `diacritics`: Must be a string.
+     * - `selectedItemTemplateUrl`: Must be a string.
      *
      * For details on the values, see the documentation for `bimSelect`.
      * @param {String} option
@@ -74,6 +76,14 @@ exports.impl = class bimSelectConfigProvider {
                     config[option] = value;
                 } else {
                     throw new Error('The itemTemplateUrl value must be a string');
+                }
+                break;
+
+            case 'selectedItemTemplateUrl':
+                if (value === null || typeof value === 'string') {
+                    config[option] = value;
+                } else {
+                    throw new Error('The selectedItemTemplateUrl value must be a string');
                 }
                 break;
         }

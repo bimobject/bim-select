@@ -683,7 +683,7 @@ describe('bimSelect', function() {
             });
             it('uses it', function() {
                 scope.itemTemplateUrl = 'item.html';
-                $templateCache.put('item.html', '<custom>{{ match.text }}</custom>');
+                $templateCache.put('item.html', '<custom>{{ item.text }}</custom>');
 
                 const element = createElement();
 
@@ -691,7 +691,7 @@ describe('bimSelect', function() {
             });
             context('when set in defaults', function() {
                 beforeEach(function() {
-                    $templateCache.put('default.html', '<strong>{{ match.text }}</strong>');
+                    $templateCache.put('default.html', '<strong>{{ item.text }}</strong>');
                     config.itemTemplateUrl = 'default.html';
                 });
                 it('is used', function() {
@@ -998,6 +998,97 @@ describe('bimSelect', function() {
                 });
             });
         });
+        describe('selected item template', function() {
+            beforeEach(function() {
+                scope.items = [
+                    { id: 1, text: 'Switzerland' },
+                    { id: 2, text: 'Sweden', visibility: 'Hidden'}
+                ];
+                scope.value = scope.items[1];
+                scope.itemTemplateUrl = 'item.html';
+                $templateCache.put('item.html',
+                    `<span>
+                        {{ item.text }}
+                        <i ng-if="item.model.visibility === 'Hidden'" class="fa fa-lock fa-fw" title=""></i
+                    </span>`
+                );
+                scope.selectedItemTemplateUrl = 'selected-item.html';
+                $templateCache.put('selected-item.html',
+                    `<span>This is the selected item template</span>`
+                );
+                this.element = createElement(`
+                    <bim-select class="bim-select-spec"
+                                item-template-url="itemTemplateUrl"
+                                ng-model="value"
+                                items="items"
+                            ></bim-select>`);
+            });
+            it('displays the selected text', function() {
+                expect(this.element.querySelector('.bim-select-selected-item'))
+                .to.contain.text('Sweden');
+            });
+            it('displays the lock icon in the template', function() {
+                expect(this.element.querySelector('.bim-select-selected-item i.fa-lock'))
+                .to.exist;
+            });
+            it('displays the input when focused', function() {
+                this.open(true);
+                expect(this.element.querySelector('.bim-select-input')).to.have.class('is-displayed');
+            });
+            it('selected item input does not exist when the input is displayed', function() {
+                this.open(true);
+                expect(this.element.querySelector('.bim-select-selected-item')).to.not.exist;
+            });
+            it('the selected item template overrides the item template', function() {
+                this.element = createElement(`
+                    <bim-select class="bim-select-spec"
+                                item-template-url="itemTemplateUrl"
+                                selected-item-template-url="selectedItemTemplateUrl"
+                                ng-model="value"
+                                items="items"
+                            ></bim-select>`);
+                expect(this.element.querySelector('.bim-select-selected-item'))
+                .to.contain.text('This is the selected item template');
+            });
+            it('the selected item config template overrides the item template', function() {
+                $templateCache.put('config-selected-item.html', '<span>Selected item config template</span>');
+                config.selectedItemTemplateUrl = 'config-selected-item.html';
+                this.element = createElement(`
+                    <bim-select class="bim-select-spec"
+                                item-template-url="itemTemplateUrl"
+                                ng-model="value"
+                                items="items"
+                            ></bim-select>`);
+                expect(this.element.querySelector('.bim-select-selected-item'))
+                .to.contain.text('Selected item config template');
+            });
+            context('when disabled', function() {
+                beforeEach(function() {
+                    this.element = createElement(`
+                        <bim-select class="bim-select-spec"
+                                    item-template-url="itemTemplateUrl"
+                                    ng-model="value"
+                                    items="items"
+                                    ng-disabled="true"
+                                ></bim-select>`);
+                });
+                it('should not display input field when model has a value', function() {
+                    expect(this.element.querySelector('.bim-select-input')).to.not.have.class('is-displayed');
+                });
+                it('should not display input field when model has a value even after opening', function() {
+                    this.open(true);
+                    expect(this.element.querySelector('.bim-select-input')).to.not.have.class('is-displayed');
+                });
+                it('should display input field when model does not have a value', function() {
+                    scope.value = null;
+                    scope.$digest();
+                    expect(this.element.querySelector('.bim-select-input')).to.have.class('is-displayed');
+                });
+                it('selected input template container should also be disabled', function() {
+                    expect(this.element.querySelector('.bim-select-selected-item')).to.have.attr('disabled', 'disabled');
+                });
+            });
+        });
     });
 
     describe('controller', function() {
@@ -1023,7 +1114,7 @@ describe('bimSelect', function() {
                 this.event = {
                     preventDefault: sinon.stub()
                 };
-                this.controller.select(this.event, { model: {} });
+                this.controller.select(this.event, { model: {text: 'Eric', id: 777} });
             });
             it('prevents navigation for link clicks', function() {
                 expect(this.event.preventDefault).to.have.been.calledOnce;
