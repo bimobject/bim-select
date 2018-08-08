@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v3.3.7/dist/css/bootstrap.css">
     <link rel="stylesheet" href="https://cdn.rawgit.com/FortAwesome/Font-Awesome/945e8bbd/css/font-awesome.css">
+    <style>
+        body {
+            padding-bottom: 200px;
+        }
+    </style>
 </head>
 <body ng-controller="ExampleController as vm">
     <div class="container">
@@ -74,6 +79,23 @@
                     sorter="vm.reverseCountrySorter"></bim-select>
         <p>Selected value: <span ng-bind="vm.sortedValue | json"></span></p>
 
+        <h2>Selected item validation</h2>
+        <h6>Role (Editors cannot publish)</h6>
+        <form name="vm.statusForm">
+        <bim-select items="vm.roles"
+                    ng-model="vm.roleValue"
+          ></bim-select>
+        <h6>Status</h6>
+        <bim-select items="vm.statuses"
+                    validator="vm.validator"
+                    ng-model="vm.statusValue"
+                    name="status"
+                    ng-class="{
+                        'has-error': vm.statusForm.status.$invalid
+                    }"
+          ></bim-select>
+        </form>
+
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -85,6 +107,7 @@
     angular
         .module('app', ['bim.select'])
         .controller('ExampleController', function() {
+            const vm = this;
             // COUNTRIES
             this.countries = [
                 { name: 'Denmark', code: 'dk', prefixCode: true },
@@ -110,6 +133,33 @@
                 return query ? -result : result;
             }
 
+            // Roles
+            this.roles = [
+                { text: 'Admin', id: 1 },
+                { text: 'Editor', id: 2}
+            ];
+            this.roleValue = this.roles[1];
+
+
+            // Statuses
+            this.statuses = [
+                { text: 'Publish', id: 1 },
+                { text: 'Unpublish', id: 2},
+                { text: 'Archive', id: 3}
+            ];
+            this.statusValue = this.statuses[1];
+            
+            this.validator = function(item) {
+                if (item) {
+                    if (item.model.text === 'Publish') {
+                        if (vm.roleValue.text !== 'Admin') {
+                            return false;
+                        }
+                    }
+                    
+                }
+                return true;
+            }
 
             // NAMES
             this.names = [

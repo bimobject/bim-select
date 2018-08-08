@@ -4,6 +4,7 @@ bim-select {
         opacity: 0 !important;
         border-top-left-radius: 4px !important; // Needs !important to override Bootstrap styles.
         border-bottom-left-radius: 4px !important; // Needs !important to override Bootstrap styles.
+        z-index: 4 !important;
         &.is-displayed {
             opacity: 1 !important;
         }
@@ -31,11 +32,18 @@ bim-select {
         text-overflow: ellipsis;
     }
     .bim-select-selected-item {
+        width: auto !important;
         padding: 0;
         display: flex !important;
         align-items: center;
         overflow: hidden;
         position: absolute !important;
-        border-radius: 4px !important;
+        top: 0;
+        left: 0;
+        right: 33px;
+        z-index: 3 !important;
+        &.is-clearable {
+            right: 69px;
+        }
     }
 }

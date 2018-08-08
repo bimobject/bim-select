@@ -20,7 +20,7 @@ exports.name = 'bimSelect';
  *   [ngRequired]: https://docs.angularjs.org/api/ng/directive/ngRequired
  *   [ngDisabled]: https://docs.angularjs.org/api/ng/directive/ngDisabled
  *
- * @param {Expression<Array<?>>} items
+ * @param {Expression<Array<?>} items
  *   An angular expression that evaluates to an array of items in it that
  *   should be available to select from in the list by the user.
  *
@@ -29,12 +29,12 @@ exports.name = 'bimSelect';
  * @param {Expression} ngModel
  *   Should evaluate to a property that will contain the currently
  *   selected item in the `items` array.
- * @param {Expression<Function>>} [onChange]
+ * @param {Expression<Function>} [onChange]
  *   A function that will be notified when the user selects a new item
  *   in the list. Use `selected` in the expression to get hold of the
  *   selected item. The value of `selected` will be the value in the
  *   `items` array that was selected by the user.
- * @param {Expression<Function>>} [adapter]
+ * @param {Expression<Function>} [adapter]
  *   If each object in `items` does not have a `text` and `id` property
  *   you can use an adapter to transform each item into an object bimSelect
  *   can work with.
@@ -42,15 +42,15 @@ exports.name = 'bimSelect';
  *   This function is invoked once for each item in the `items` list and must
  *   return an object with a `text` (string) and an `id` (string, numeric)
  *   property.
- * @param {Expression<String>>} [itemTemplateUrl]
+ * @param {Expression<String>} [itemTemplateUrl]
  *   If you need to specify your own template to be rendered for each match
  *   in the list, set the url to the template here. `item` is available on
  *   the scope and is an object with `id`, `text` and `model` property, and
  *   the `model` property has the item in the `items` array as a value.
- * @param {Expression<String>>} [diacritics]
+ * @param {Expression<String>} [diacritics]
  *   If set to `'strip'` then all filtering in the dropdown will compare
  *   items using the normalized values stripped of any diacritic marks.
- * @param {Expression<Function>>} [sorter]
+ * @param {Expression<Function>} [sorter]
  *   It allows the consumer to have a custom order of the matching items.
  *
  *   An expression evaulating to a function reference. This function will
@@ -62,14 +62,19 @@ exports.name = 'bimSelect';
  *   prioritized, a custom sorter handling this could be added.
  *
  *   Please note: This function is only affects a filtered list.
- * @param {Expression<String>>} [selectedItemTemplateUrl]
+ * @param {Expression<String>} [selectedItemTemplateUrl]
  *   The selected item template is rendered in place of the input when the input
  *   is not focused. This allows you to render html inside a 'fake' input.
  *   For instance, if you want to render an icon beside the text of the selected
  *   dropdown item you can do so by using your own custom template. `item` is
  *   available on the scope and it is an object with `id`, `text` and `model` property,
  *   and the `model` property has the item in the `items` array as a value.
- *
+ * @param {Expression<Function>} [validator]
+ *   This function allows the consumer to specify if the selected item is valid or not.
+ *   The function is optional and the selected item will always be valid if not supplied.
+ *   The validator function should return a boolean. It receives the selected item
+ *   as it's first parameter (which may be falsy if nothing is selected).
+ *   Returning true makes it valid, false makes it invalid.
  * @example
  * Simple example
  *
@@ -120,16 +125,47 @@ exports.name = 'bimSelect';
  * ```
  *
  * @example
-* Custom template where the text should be "encrypted".
-*
-* ```html
-* <script type="text/ng-template" id="item.html">
-*   <span class="bim-select-item">{{ item.text | rot13 }}</span>
-* </script>
-*
-* <bim-select items="vm.items"
-*             ng-model="vm.selected"
-*             item-template-url="'item.html'"></bim-select>
+ * Custom template where the text should be "encrypted".
+ *
+ * ```html
+ * <script type="text/ng-template" id="item.html">
+ *   <span class="bim-select-item">{{ item.text | rot13 }}</span>
+ * </script>
+ *
+ * <bim-select items="vm.items"
+ *             ng-model="vm.selected"
+ *             item-template-url="'item.html'"></bim-select>
+ * @example
+ * Using validator to make component invalid when user is not allowed to
+ * choose an item from the list. Adds the invalid classes to the component.
+ *
+ * ```js
+ * vm.items = [
+ *   { id: 1, text: 'Publish' },
+ *   { id: 2, text: 'Unpublish' }
+ * ];
+ * const isAdmin = false;
+ * vm.validator = function(selectedItem) {
+ *     if (selectedItem) {
+ *        if (selectedItem.text === 'Publish') {
+ *            if (!isAdmin) {
+ *                return false;
+ *            }
+ *        }
+ *     }
+ *     return true;
+ * }
+ * ```
+ * ```html
+ * <bim-select class="bim-select-spec"
+ *             ng-model="vm.selected"
+ *             items="vm.items"
+ *             validator="vm.validator"
+ *             name="status"
+ *             ng-class="{
+                   'has-error': form.status.$invalid
+               }"></bim-select>
+ * ```
 */
 exports.impl = {
     bindings: {
@@ -139,7 +175,8 @@ exports.impl = {
         items: '<',
         onChange: '&',
         selectedItemTemplateUrl: '<?',
-        sorter: '<?'
+        sorter: '<?',
+        validator: '<'
     },
     require: {
         model: 'ngModel'
@@ -190,6 +227,9 @@ function BimSelectController(
     // ANGULAR METHODS
 
     $ctrl.$onInit = function() {
+        $ctrl.validator = $ctrl.validator || function() {
+            return true;
+        };
         $ctrl.internalItemTemplateUrl = $ctrl.itemTemplateUrl ||
             bimSelectConfig.itemTemplateUrl ||
             defaultItemTemplateUrl;
@@ -441,6 +481,7 @@ function BimSelectController(
             $ctrl.model.$modelValue && setSelected(adaptItem($ctrl.model.$modelValue));
             $ctrl.inputValue = $ctrl.model.$modelValue && $ctrl.adapter($ctrl.model.$modelValue).text;
         }
+        validateSelected();
     }
 
     function outsideClick(event) {
@@ -490,5 +531,11 @@ function BimSelectController(
 
     function setSelected(item) {
         $scope.item = item;
+    }
+
+    function validateSelected() {
+        const item = $ctrl.model.$modelValue && adaptItem($ctrl.model.$modelValue);
+        const isValid = $ctrl.validator(item);
+        $ctrl.model.$setValidity('selection', isValid);
     }
 };
