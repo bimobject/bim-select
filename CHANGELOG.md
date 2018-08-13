@@ -1,3 +1,13 @@
+<a name="3.1.0"></a>
+# [3.1.0](https://github.com/bimobject/bim-select/compare/v3.0.0...v3.1.0) (2018-08-13)
+
+
+### Features
+
+* **validator:** validate component based on selected item. ([f6b521f](https://github.com/bimobject/bim-select/commit/f6b521f))
+
+
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/bimobject/bim-select/compare/v2.3.1...v3.0.0) (2018-07-11)
 
