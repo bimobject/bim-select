@@ -2,6 +2,9 @@
     <div class="input-group">
         <span ng-if="!$ctrl.shouldDisplayInput()" 
               class="bim-select-selected-item form-control"
+              ng-class="{
+                'is-clearable': $ctrl.isClearable() && !$ctrl.isDisabled()
+                }"
               ng-disabled="$ctrl.isDisabled()">
             <ng-include src="$ctrl.internalSelectedItemTemplateUrl"></ng-include>
         </span>

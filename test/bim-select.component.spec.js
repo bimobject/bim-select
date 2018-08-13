@@ -1089,6 +1089,54 @@ describe('bimSelect', function() {
                 });
             });
         });
+
+        describe('validator', function() {
+            beforeEach(function() {
+                scope.items = [
+                    { id: 1, text: 'Publish' },
+                    { id: 2, text: 'Unpublish' }
+                ];
+                scope.value = scope.items[0];
+            });
+            it('is invalid when not allowed to publish', function() {
+                const isAllowedToPublish = false;
+                scope.validator = function(item) {
+                    if (item) {
+                        if (item.text === 'Publish') {
+                            return isAllowedToPublish;
+                        }
+                    }
+                    return true;
+                };
+                this.element = createElement(`
+                    <bim-select class="bim-select-spec"
+                                ng-model="value"
+                                items="items"
+                                validator="validator"
+                            ></bim-select>`);
+                scope.$digest();
+                expect(this.element).to.have.class('ng-invalid');
+            });
+            it('is not invalid when allowed to publish', function() {
+                const isAllowedToPublish = true;
+                scope.validator = function(item) {
+                    if (item) {
+                        if (item.text === 'Publish') {
+                            return isAllowedToPublish;
+                        }
+                    }
+                    return true;
+                };
+                this.element = createElement(`
+                    <bim-select class="bim-select-spec"
+                                ng-model="value"
+                                items="items"
+                                validator="validator"
+                            ></bim-select>`);
+                scope.$digest();
+                expect(this.element).to.not.have.class('ng-invalid');
+            });
+        });
     });
 
     describe('controller', function() {
