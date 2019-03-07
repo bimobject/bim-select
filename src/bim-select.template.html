@@ -44,7 +44,7 @@
         <li role="option"
             ng-repeat="item in $ctrl.matches track by item.id"
             ng-click="$ctrl.select($event, item)"
-            ng-class="{ active: item.index === $ctrl.activeIndex }">
+            ng-class="{ 'active': item.index === $ctrl.activeIndex, 'is-disabled': $ctrl.isDisabledItem(item) }">
             <ng-include src="$ctrl.internalItemTemplateUrl"></ng-include>
         </li>
     </ul>

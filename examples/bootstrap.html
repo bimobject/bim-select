@@ -96,6 +96,9 @@
           ></bim-select>
         </form>
 
+        <h2> Disabling items </h2>
+        <bim-select items="vm.dItems" ng-model="vm.dIValues"></bim-select>
+
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -180,6 +183,14 @@
             for (var i=1;i<=10000;i++) {
                 this.long.push({ id: i, text: 'Item ' + i });
             }
+
+            // DISABLED ELEMENTS
+            this.dItems = [
+                { id: 1, text: 'Published', isDisabled: true },
+                { id: 2, text: 'Unpublished', isDisabled: false },
+                { id: 3, text: 'Archived' }
+            ]
+            // this.dIValue = this.dItems[1];
         })
     </script>
 </body>
