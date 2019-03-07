@@ -1,3 +1,13 @@
+<a name="3.2.0"></a>
+# [3.2.0](https://github.com/bimobject/bim-select/compare/v3.1.0...v3.2.0) (2019-03-07)
+
+
+### Features
+
+* **disabling:** disabling elements are now supported ([aff8389](https://github.com/bimobject/bim-select/commit/aff8389))
+
+
+
 <a name="3.1.0"></a>
 # [3.1.0](https://github.com/bimobject/bim-select/compare/v3.0.0...v3.1.0) (2018-08-13)
 
