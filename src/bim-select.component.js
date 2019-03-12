@@ -163,8 +163,22 @@ exports.name = 'bimSelect';
  *             validator="vm.validator"
  *             name="status"
  *             ng-class="{
-                   'has-error': form.status.$invalid
-               }"></bim-select>
+ *                 'has-error': form.status.$invalid
+ *              }"></bim-select>
+ * ```
+ * @example
+ * Disabling elements (options)
+ * You have to add the isDisabled attribute to disable elements
+ * Add isDisabled: true to disable element, add isDisabled: false OR do not add anything to enable element
+ * ```js
+ * vm.items = [
+ *  { id: 1, text: 'Published', isDisabled: true},
+ *  { id: 2, text: 'Unpublished', isDisabled: false},
+ *  { id: 3, text: 'Archived' }
+ * ]
+ * ```
+ * ```html
+ * <bim-select items="vm.items" ...>
  * ```
 */
 exports.impl = {
@@ -301,7 +315,9 @@ function BimSelectController(
 
     $ctrl.select = function(event, match) {
         event && event.preventDefault();
-        if (match.id !== 'bim-select-message') {
+        // check if models are existing // isDisabled attribute is existing
+        var isDisabled = (typeof match.model !== 'undefined' && typeof match.model.isDisabled !== 'undefined') ? match.model.isDisabled : false;
+        if (!isDisabled && match.id !== 'bim-select-message') {
             setSelection(match);
             $ctrl.onChange({ selected: match.model });
             $ctrl.close();
@@ -378,6 +394,15 @@ function BimSelectController(
         const modelIsFalsy = !$ctrl.model.$modelValue;
         return modelIsFalsy || ((isFocused) && !isDisabled);
     };
+
+    $ctrl.isDisabledItem = function(item) {
+        if (item.model){
+            return item.model.isDisabled === true;
+        } else {
+            return false;
+        }
+    }
+
 
     // INTERNAL HELPERS
 

@@ -1137,6 +1137,31 @@ describe('bimSelect', function() {
                 expect(this.element).to.not.have.class('ng-invalid');
             });
         });
+        describe('when disabling elements', function() {
+            beforeEach(function() {
+                scope.items = [
+                    { id: 1, text: 'Published', isDisabled: true },
+                    { id: 2, text: 'Unublished', isDisabled: false },
+                    { id: 3, text: 'Archived' }
+                ];
+            });
+            it('it has is-disabled class if isDisabled set to true', function() {
+                this.element = createElement(`<bim-select items="items" ng-model="value"></bim-select>`);
+                scope.$digest();
+                expect(this.element.querySelector('ul>li:nth-child(2)')).to.have.class('is-disabled');
+            });
+            it('it does not have is-disabled class if isDisabled set to false', function() {
+                this.element = createElement(`<bim-select items="items" ng-model="value"></bim-select>`);
+                scope.$digest();
+                expect(this.element.querySelector('ul>li:nth-child(3)')).to.not.have.class('is-disabled');
+            });
+            it('does not have is-disabled class if isDisabled is not defined', function() {
+                this.element = createElement(`<bim-select items="items" ng-model="value"></bim-select>`);
+                scope.$digest();
+                expect(this.element.querySelector('ul>li:nth-child(4)')).to.not.have.class('is-disabled');
+            });
+
+        });
     });
 
     describe('controller', function() {
