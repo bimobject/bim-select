@@ -396,13 +396,12 @@ function BimSelectController(
     };
 
     $ctrl.isDisabledItem = function(item) {
-        if (item.model){
+        if (item.model) {
             return item.model.isDisabled === true;
         } else {
             return false;
         }
-    }
-
+    };
 
     // INTERNAL HELPERS
 
